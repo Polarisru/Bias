@@ -1,0 +1,13 @@
+Flash/
+Developing/
+obj/
+Trash/
+lib/
+*.dbg
+*.exe
+*.dep
+*.bak
+*.html
+*.elay
+*.depend
+*.pdf

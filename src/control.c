@@ -1,0 +1,204 @@
+#include "control.h"
+#include "display.h"
+#include "global.h"
+#include "outputs.h"
+
+#define ST1_GPIO    GPIOA
+#define ST2_GPIO    GPIOA
+#define ST3_GPIO    GPIOB
+#define UIN_GPIO    GPIOB
+
+#define ST1_PIN     GPIO_Pin_0
+#define ST2_PIN     GPIO_Pin_1
+#define ST3_PIN     GPIO_Pin_0
+#define UIN_PIN     GPIO_Pin_1
+
+enum {
+  CTRL_VAL_ST1,
+  CTRL_VAL_ST2,
+  CTRL_VAL_ST3,
+  CTRL_VAL_UIN,
+  CTRL_VAL_LAST
+};
+
+static uint8_t CONTROL_Values[CTRL_VAL_LAST];
+static uint8_t CONTROL_PwmLimit;
+static uint8_t CONTROL_ErrCode;
+static uint8_t CONTROL_ErrCounter[ERR_CODE_LAST];
+
+#define ADC1_DR_Address             0x40012440
+
+void CONTROL_Configuration(void)
+{
+  ADC_InitTypeDef ADC_InitStruct;
+  DMA_InitTypeDef DMA_InitStructure;
+  TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+  GPIO_InitTypeDef GPIO_InitStructure;
+
+  GPIO_InitStructure.GPIO_Pin = ST1_PIN;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_Init(ST1_GPIO, &GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = ST2_PIN;
+  GPIO_Init(ST2_GPIO, &GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = ST3_PIN;
+  GPIO_Init(ST3_GPIO, &GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = UIN_PIN;
+  GPIO_Init(UIN_GPIO, &GPIO_InitStructure);
+
+  ADC_DeInit(ADC1);
+  DMA_DeInit(DMA1_Channel1);
+  TIM_DeInit(TIM15);
+
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC1_DR_Address;    //ADC Adresse
+  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)CONTROL_Values;      //ADC Buffer
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;              //ADC -> DMA -> RAM
+  DMA_InitStructure.DMA_BufferSize = 4;                    //Buffer Size
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;  //ADC Datenword = 16bit
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;      //RAM Datenword = 16bit, beide MÜSSEN gleich sein
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;                //DAM als Ring Buffer (DMA_Mode_Normal)
+  DMA_InitStructure.DMA_Priority = DMA_Priority_High;              //Hohe Prio
+  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;                //Memory -> DMA -> Memory = Disabelt
+  DMA_Init(DMA1_Channel1, &DMA_InitStructure);
+
+  /* DMA1 Channel1 enable */
+  DMA_Cmd(DMA1_Channel1, ENABLE);
+
+  ADC_StructInit(&ADC_InitStruct);
+
+  ADC_InitStruct.ADC_Resolution = ADC_Resolution_8b;
+  ADC_InitStruct.ADC_ContinuousConvMode = ENABLE;
+  ADC_InitStruct.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_Rising;
+  ADC_InitStruct.ADC_ExternalTrigConv = ADC_ExternalTrigConv_T3_TRGO;
+  ADC_InitStruct.ADC_DataAlign = ADC_DataAlign_Right;
+  ADC_InitStruct.ADC_ScanDirection = ADC_ScanDirection_Upward;
+  ADC_Init(ADC1, &ADC_InitStruct);
+
+  ADC_ChannelConfig(ADC1, ADC_Channel_0, ADC_SampleTime_239_5Cycles);
+  ADC_ChannelConfig(ADC1, ADC_Channel_1, ADC_SampleTime_239_5Cycles);
+  ADC_ChannelConfig(ADC1, ADC_Channel_8, ADC_SampleTime_239_5Cycles);
+  ADC_ChannelConfig(ADC1, ADC_Channel_9, ADC_SampleTime_239_5Cycles);
+
+  ADC_GetCalibrationFactor(ADC1);
+
+  /* ADC DMA request in circular mode */
+  ADC_DMARequestModeConfig(ADC1, ADC_DMAMode_Circular);
+  /* Enable ADC_DMA */
+  ADC_DMACmd(ADC1, ENABLE);
+
+  ADC_Cmd(ADC1, ENABLE);
+
+  TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
+
+  /* Time base configuration */
+  TIM_TimeBaseStructure.TIM_Period = (SystemCoreClock / 1000 ) - 1; //1KHz
+  TIM_TimeBaseStructure.TIM_Prescaler = 0x0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0x0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+
+  /* TIM15 enable counter */
+  TIM_Cmd(TIM3, ENABLE);
+  /* TIM15 enable Trigger Output */
+  TIM_SelectOutputTrigger(TIM3, TIM_TRGOSource_Update);
+
+  ADC_StartOfConversion(ADC1);
+}
+
+/** \brief Set error level for current sensors
+ *
+ * \param value uint8_t
+ * \return Nothing
+ *
+ */
+void CONTROL_SetPwmLimit(uint8_t value)
+{
+  CONTROL_PwmLimit = (uint8_t)((uint16_t)value * CTRL_ST_FACTOR / 100);
+}
+
+/** \brief Reset error codes
+ *
+ * \return void Nothing
+ *
+ */
+void CONTROL_ResetErrCode(void)
+{
+  uint8_t i;
+
+  for (i = 0; i < ERR_CODE_LAST; i++)
+    CONTROL_ErrCounter[i] = 0;
+  CONTROL_ErrCode = ERR_CODE_NONE;
+}
+
+/** \brief Get error codes value
+ *
+ * \return uint8_t
+ *
+ */
+uint8_t CONTROL_GetErrCode(void)
+{
+  //return ERR_CODE_NONE;
+  return CONTROL_ErrCode;
+}
+
+/**< Control task for monitoring */
+void CONTROL_Task(void *pvParameters)
+{
+  CONTROL_ResetErrCode();
+
+  while (1)
+  {
+    vTaskDelay(10);
+    if (CONTROL_Values[CTRL_VAL_UIN] < 0x40)
+    {
+      CONTROL_ErrCounter[ERR_CODE_UIN]++;
+      if (CONTROL_ErrCounter[ERR_CODE_UIN] > 10)
+      {
+//        vTaskSuspendAll();
+//        DISPLAY_Disable();
+//        OUTPUTS_Switch(OUTPUT_FAN1, true);
+//        while (1);
+      }
+    } else
+    {
+      CONTROL_ErrCounter[ERR_CODE_UIN] = 0;
+    }
+    /**< Inverted order 3-2-1 to get LED1 error first */
+    if (CONTROL_Values[CTRL_VAL_ST3] < CONTROL_PwmLimit)
+    {
+      if (CONTROL_ErrCounter[ERR_CODE_LED3] < CTRL_ERR_CONTER)
+        CONTROL_ErrCounter[ERR_CODE_LED3]++;
+      else
+        CONTROL_ErrCode = ERR_CODE_LED3;
+    } else
+    {
+      CONTROL_ErrCounter[ERR_CODE_LED3] = 0;
+    }
+    if (CONTROL_Values[CTRL_VAL_ST2] < CONTROL_PwmLimit)
+    {
+      if (CONTROL_ErrCounter[ERR_CODE_LED2] < CTRL_ERR_CONTER)
+        CONTROL_ErrCounter[ERR_CODE_LED2]++;
+      else
+        CONTROL_ErrCode = ERR_CODE_LED2;
+    } else
+    {
+      CONTROL_ErrCounter[ERR_CODE_LED2] = 0;
+    }
+    if (CONTROL_Values[CTRL_VAL_ST1] < CONTROL_PwmLimit)
+    {
+      if (CONTROL_ErrCounter[ERR_CODE_LED1] < CTRL_ERR_CONTER)
+        CONTROL_ErrCounter[ERR_CODE_LED1]++;
+      else
+        CONTROL_ErrCode = ERR_CODE_LED1;
+    } else
+    {
+      CONTROL_ErrCounter[ERR_CODE_LED1] = 0;
+    }
+  }
+}
