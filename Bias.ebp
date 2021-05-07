@@ -242,7 +242,15 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src\control.h" />
+		<Unit filename="src\crc16.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src\crc16.h" />
 		<Unit filename="src\defines.h" />
+		<Unit filename="src\eeprom.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src\eeprom.h" />
 		<Unit filename="src\FreeRTOSConfig.h" />
 		<Unit filename="src\global.c">
 			<Option compilerVar="CC" />
@@ -263,10 +271,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src\outputs.h" />
-		<Unit filename="src\settings.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src\settings.h" />
+		<Unit filename="src\rtos.h" />
 		<Unit filename="src\spi.c">
 			<Option compilerVar="CC" />
 		</Unit>

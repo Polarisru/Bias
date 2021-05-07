@@ -1,7 +1,5 @@
-#include "buttons.h"
 #include "comm.h"
 #include "outputs.h"
-#include "pwm.h"
 #include "uart.h"
 #include "utils.h"
 
@@ -63,16 +61,9 @@ void COMM_Task(void *pParameters)
 
     UTILS_StrUpr(cmd);
 
-    if (0 == strncmp(cmd, commKEY, strlen(commKEY)))
-    {
-      /**< It is a KEY command */
-      sprintf(buff, "K%1d", BUTTONS_GetValue());
-    } else
     if (0 == strncmp(cmd, commOUT, strlen(commOUT)))
     {
       /**< It is a OUT command */
-      //bVal = cmd[strlen(commOut)];
-      //if (bVal < '0') || (bVal > '9')
       if (2 != sscanf(&cmd[strlen(commOUT)], "%1lu:%1lu", &intVal0, &intVal1))
       {
         strcpy(buff, commErrPrm);
@@ -83,18 +74,6 @@ void COMM_Task(void *pParameters)
           OUTPUTS_Switch((uint8_t)intVal0, false);
         else
           OUTPUTS_Switch((uint8_t)intVal0, true);
-        strcpy(buff, commErrOk);
-      }
-    } else
-    if (0 == strncmp(cmd, commPWM, strlen(commPWM)))
-    {
-      /**< It is a PWM command */
-      if (1 != sscanf(&cmd[strlen(commPWM)], "%lu", &intVal0))
-      {
-        strcpy(buff, commErrPrm);
-      } else
-      {
-        PWM_SetValue((uint8_t)intVal0);
         strcpy(buff, commErrOk);
       }
     } else

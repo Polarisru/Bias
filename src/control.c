@@ -1,5 +1,4 @@
 #include "control.h"
-#include "display.h"
 #include "global.h"
 #include "outputs.h"
 
@@ -13,18 +12,7 @@
 #define ST3_PIN     GPIO_Pin_0
 #define UIN_PIN     GPIO_Pin_1
 
-enum {
-  CTRL_VAL_ST1,
-  CTRL_VAL_ST2,
-  CTRL_VAL_ST3,
-  CTRL_VAL_UIN,
-  CTRL_VAL_LAST
-};
-
-static uint8_t CONTROL_Values[CTRL_VAL_LAST];
-static uint8_t CONTROL_PwmLimit;
 static uint8_t CONTROL_ErrCode;
-static uint8_t CONTROL_ErrCounter[ERR_CODE_LAST];
 
 #define ADC1_DR_Address             0x40012440
 
@@ -55,7 +43,7 @@ void CONTROL_Configuration(void)
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
 
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC1_DR_Address;    //ADC Adresse
-  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)CONTROL_Values;      //ADC Buffer
+  //DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)CONTROL_Values;      //ADC Buffer
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;              //ADC -> DMA -> RAM
   DMA_InitStructure.DMA_BufferSize = 4;                    //Buffer Size
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
@@ -111,17 +99,6 @@ void CONTROL_Configuration(void)
   ADC_StartOfConversion(ADC1);
 }
 
-/** \brief Set error level for current sensors
- *
- * \param value uint8_t
- * \return Nothing
- *
- */
-void CONTROL_SetPwmLimit(uint8_t value)
-{
-  CONTROL_PwmLimit = (uint8_t)((uint16_t)value * CTRL_ST_FACTOR / 100);
-}
-
 /** \brief Reset error codes
  *
  * \return void Nothing
@@ -129,11 +106,7 @@ void CONTROL_SetPwmLimit(uint8_t value)
  */
 void CONTROL_ResetErrCode(void)
 {
-  uint8_t i;
-
-  for (i = 0; i < ERR_CODE_LAST; i++)
-    CONTROL_ErrCounter[i] = 0;
-  CONTROL_ErrCode = ERR_CODE_NONE;
+  //CONTROL_ErrCode = ERR_CODE_NONE;
 }
 
 /** \brief Get error codes value
@@ -155,50 +128,5 @@ void CONTROL_Task(void *pvParameters)
   while (1)
   {
     vTaskDelay(10);
-    if (CONTROL_Values[CTRL_VAL_UIN] < 0x40)
-    {
-      CONTROL_ErrCounter[ERR_CODE_UIN]++;
-      if (CONTROL_ErrCounter[ERR_CODE_UIN] > 10)
-      {
-//        vTaskSuspendAll();
-//        DISPLAY_Disable();
-//        OUTPUTS_Switch(OUTPUT_FAN1, true);
-//        while (1);
-      }
-    } else
-    {
-      CONTROL_ErrCounter[ERR_CODE_UIN] = 0;
-    }
-    /**< Inverted order 3-2-1 to get LED1 error first */
-    if (CONTROL_Values[CTRL_VAL_ST3] < CONTROL_PwmLimit)
-    {
-      if (CONTROL_ErrCounter[ERR_CODE_LED3] < CTRL_ERR_CONTER)
-        CONTROL_ErrCounter[ERR_CODE_LED3]++;
-      else
-        CONTROL_ErrCode = ERR_CODE_LED3;
-    } else
-    {
-      CONTROL_ErrCounter[ERR_CODE_LED3] = 0;
-    }
-    if (CONTROL_Values[CTRL_VAL_ST2] < CONTROL_PwmLimit)
-    {
-      if (CONTROL_ErrCounter[ERR_CODE_LED2] < CTRL_ERR_CONTER)
-        CONTROL_ErrCounter[ERR_CODE_LED2]++;
-      else
-        CONTROL_ErrCode = ERR_CODE_LED2;
-    } else
-    {
-      CONTROL_ErrCounter[ERR_CODE_LED2] = 0;
-    }
-    if (CONTROL_Values[CTRL_VAL_ST1] < CONTROL_PwmLimit)
-    {
-      if (CONTROL_ErrCounter[ERR_CODE_LED1] < CTRL_ERR_CONTER)
-        CONTROL_ErrCounter[ERR_CODE_LED1]++;
-      else
-        CONTROL_ErrCode = ERR_CODE_LED1;
-    } else
-    {
-      CONTROL_ErrCounter[ERR_CODE_LED1] = 0;
-    }
   }
 }
