@@ -53,6 +53,7 @@ void EEPROM_SaveCopy(uint8_t ee_copy)
 {
   uint32_t addr;
   uint16_t crc;
+  uint16_t i;
 
   switch (ee_copy)
   {
@@ -72,7 +73,8 @@ void EEPROM_SaveCopy(uint8_t ee_copy)
     /**< Erase EEPROM page */
     FLASH_ErasePage(addr);
     /**< Write page content to EEPROM */
-      FLASH_ProgramWord(addr, uint32_t Data);
+    for (i = 0; i < EEPROM_PAGE_SIZE; i += sizeof(uint32_t))
+      FLASH_ProgramWord(addr + i, *((uint32_t*)&EEPROM_Page[i]));
   }
 }
 
@@ -196,6 +198,7 @@ void EEPROM_Configuration(void)
   uint16_t crc_read;
   bool firstCopy, secondCopy;
 
+  FLASH_Unlock();
   firstCopy = true;
   secondCopy = true;
   EEPROM_LoadCopy(EE_COPY_1);

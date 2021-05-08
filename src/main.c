@@ -11,6 +11,7 @@
 /**< LED blinking task */
 void LED_Task(void *pvParameters)
 {
+  EEPROM_Configuration();
 
   while (1)
   {
@@ -25,16 +26,16 @@ void LED_Task(void *pvParameters)
 int main(void)
 {
   GPIO_Configuration();
-  OUTPUTS_Configuration();
-  INPUTS_Configuration();
+  //OUTPUTS_Configuration();
+  //INPUTS_Configuration();
 
   CONTROL_Configuration();
 
   /**< Create RTOS tasks */
-  xTaskCreate(LED_Task, "LedTask", 50, NULL, tskIDLE_PRIORITY + 1, NULL);
-  //xTaskCreate(COMM_Task, "CommTask", 400, NULL, tskIDLE_PRIORITY + 1, &xTaskComm);
-  xTaskCreate(CONTROL_Task, "ControlTask", 50, NULL, tskIDLE_PRIORITY + 1, NULL);
-  xTaskCreate(ACTIONS_Task, "MainTask", 100, NULL, tskIDLE_PRIORITY + 2, NULL);
+  xTaskCreate(LED_Task, "LedTask", 50, NULL, LED_TASK_PRIORITY, NULL);
+  xTaskCreate(COMM_Task, "CommTask", 100, NULL, COMM_TASK_PRIORITY, &xTaskComm);
+  xTaskCreate(CONTROL_Task, "ControlTask", 50, NULL, CONTROL_TASK_PRIORITY, NULL);
+  //xTaskCreate(ACTIONS_Task, "MainTask", 100, NULL, tskIDLE_PRIORITY + 2, NULL);
   /**< Start the scheduler */
 	vTaskStartScheduler();
 }

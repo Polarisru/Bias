@@ -3,13 +3,13 @@
 #include "uart.h"
 #include "utils.h"
 
-const char commKEY[] = "KEY";
+const char commID[] = "ID";
 const char commOUT[] = "OUT";
-const char commPWM[] = "PWM";
 
 const char commErrOk[]  = "OK";
 const char commErrCmd[] = "E.C";
 const char commErrPrm[] = "E.P";
+const char commAnsID[] = "AD7293";
 
 /** \brief Send answer
  *
@@ -61,6 +61,10 @@ void COMM_Task(void *pParameters)
 
     UTILS_StrUpr(cmd);
 
+    if (0 == strncmp(cmd, commID, strlen(commID)))
+    {
+      strcpy(buff, commAnsID);
+    } else
     if (0 == strncmp(cmd, commOUT, strlen(commOUT)))
     {
       /**< It is a OUT command */

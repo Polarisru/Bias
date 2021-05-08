@@ -3,8 +3,8 @@
 
 #include "defines.h"
 
-#define EEPROM_ADDR_COPY_1      0x00400000
-#define EEPROM_ADDR_COPY_2      0x00400100
+#define EEPROM_ADDR_COPY_1      0x08007800
+#define EEPROM_ADDR_COPY_2      0x08007C00
 
 #define EEPROM_PAGE_SIZE        0x100
 

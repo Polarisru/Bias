@@ -18,7 +18,7 @@
 					<Add option="-Wall" />
 					<Add option="-fdata-sections" />
 					<Add option="-ffunction-sections" />
-					<Add option="-O0" />
+					<Add option="-O1" />
 					<Add option="-g3" />
 				</Compiler>
 				<Cpp>
@@ -31,9 +31,6 @@
 				<Assembler>
 					<Add option="-Wa,--gdwarf-2" />
 				</Assembler>
-				<Linker>
-					<Add option="-Wl,--gc-sections" />
-				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin\Release\Bias.elf" />
@@ -43,23 +40,20 @@
 				<Option compiler="armgcc_eb" />
 				<Option projectDeviceOptionsRelation="0" />
 				<Compiler>
-					<Add option="-O2" />
-					<Add option="-g2" />
 					<Add option="-fdata-sections" />
 					<Add option="-ffunction-sections" />
+					<Add option="-O2" />
+					<Add option="-g2" />
 				</Compiler>
 				<Cpp>
-					<Add option="-O2" />
-					<Add option="-g2" />
 					<Add option="-fdata-sections" />
 					<Add option="-ffunction-sections" />
+					<Add option="-O2" />
+					<Add option="-g2" />
 				</Cpp>
 				<Assembler>
 					<Add option="-Wa,--no-warn" />
 				</Assembler>
-				<Linker>
-					<Add option="-Wl,--gc-sections" />
-				</Linker>
 			</Target>
 		</Build>
 		<Device>
@@ -83,6 +77,7 @@
 		<Linker>
 			<Add option="-eb_lib=n" />
 			<Add option="-eb_start_files" />
+			<Add option="-Wl,--gc-sections" />
 		</Linker>
 		<Unit filename="cmsis\arm_common_tables.h" />
 		<Unit filename="cmsis\arm_math.h" />
@@ -296,7 +291,7 @@
 		<Extensions>
 			<code_completion />
 			<debugger>
-				<target_debugging_settings target="Debug" active_interface="J-link">
+				<target_debugging_settings target="Debug" active_interface="ST-link">
 					<debug_interface interface_id="J-link" ip_address="localhost" ip_port="2331" path="%Software\SEGGER\J-Link:InstallPath%" executable="JLinkGDBServer.exe" description="sys\STM32F030.svd" dont_start_server="false" backoff_time="2000" options="0" reg_filter="0" active_family="STMicroelectronics" gdb_before_conn="" gdb_after_conn="">
 						<family_options family_id="STMicroelectronics">
 							<option opt_id="ID_DEVICE" opt_value="STM32F030C6" />
