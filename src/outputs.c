@@ -2,12 +2,7 @@
 
 /**< Structure with hardware connections for outputs */
 const TOutput OUTPUTS_Pins[OUTPUT_LAST] = {
-  {OUTPUT_PWM_GPIO, OUTPUT_PWM_PIN},
-  {OUTPUT_LED1_GPIO, OUTPUT_LED1_PIN},
-  {OUTPUT_LED2_GPIO, OUTPUT_LED2_PIN},
-  {OUTPUT_MOTOR_GPIO, OUTPUT_MOTOR_PIN},
-  {OUTPUT_FAN1_GPIO, OUTPUT_FAN1_PIN}
-  //{OUTPUT_FAN2_GPIO, OUTPUT_FAN2_PIN}
+  {OUTPUT_LED_GPIO, OUTPUT_LED_PIN}
 };
 
 /** \brief Switch output on/off

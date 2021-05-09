@@ -256,6 +256,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src\ad7293.h" />
+		<Unit filename="src\analog.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src\comm.c">
 			<Option compilerVar="CC" />
 		</Unit>

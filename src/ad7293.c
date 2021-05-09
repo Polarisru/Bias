@@ -52,5 +52,6 @@ uint16_t AD7293_ReadID(void)
 
 bool AD7293_Configuration(void)
 {
+  AD7293_ReadID();
   return (AD7293_ReadID() == AD7293_ID);
 }

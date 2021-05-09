@@ -1,5 +1,5 @@
 #include "defines.h"
-#include "actions.h"
+#include "analog.h"
 #include "comm.h"
 #include "control.h"
 #include "global.h"
@@ -15,10 +15,11 @@ void LED_Task(void *pvParameters)
 
   while (1)
   {
-    OUTPUTS_Switch(OUTPUT_LED1, true);
-    vTaskDelay(500);
-    OUTPUTS_Switch(OUTPUT_LED1, false);
-    vTaskDelay(500);
+    if (ANALOG_GetValue() > 0x40)
+      OUTPUTS_Switch(OUTPUT_LED, false);
+    else
+      OUTPUTS_Switch(OUTPUT_LED, true);
+    vTaskDelay(1000);
   }
 }
 
@@ -26,8 +27,9 @@ void LED_Task(void *pvParameters)
 int main(void)
 {
   GPIO_Configuration();
-  //OUTPUTS_Configuration();
+  OUTPUTS_Configuration();
   //INPUTS_Configuration();
+  ANALOG_Configuration();
 
   /**< Create RTOS tasks */
   xTaskCreate(LED_Task, "LedTask", 50, NULL, LED_TASK_PRIORITY, NULL);
