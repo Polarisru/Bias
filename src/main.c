@@ -29,8 +29,6 @@ int main(void)
   //OUTPUTS_Configuration();
   //INPUTS_Configuration();
 
-  CONTROL_Configuration();
-
   /**< Create RTOS tasks */
   xTaskCreate(LED_Task, "LedTask", 50, NULL, LED_TASK_PRIORITY, NULL);
   xTaskCreate(COMM_Task, "CommTask", 100, NULL, COMM_TASK_PRIORITY, &xTaskComm);

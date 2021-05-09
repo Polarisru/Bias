@@ -44,7 +44,7 @@ uint16_t AD7293_ReadID(void)
 	tx[0] = AD7293_OP_READ | REGISTER_COMMON_DEVICE_ID;
 	SPI_Select(SPI_SELECT_AD7293);
 	SPI_Transmit(tx, 1);
-	SPI_Transmit(rx, 2);
+	SPI_Receive(rx, 2);
   SPI_Select(SPI_SELECT_NONE);
 
 	return (((uint16_t)rx[0] << 8) | rx[1]);

@@ -16,7 +16,7 @@ void UART_IRQHandler(void)
     /**< We have not woken a task at the start of the ISR */
     xHigherPriorityTaskWoken = pdFALSE;
 
-    //USART_ClearITPendingBit(UART_NUM, USART_IT_RXNE);
+    USART_ClearITPendingBit(UART_NUM, USART_IT_RXNE);
 
     c = USART_ReceiveData(UART_NUM) & 0x7F;
 
