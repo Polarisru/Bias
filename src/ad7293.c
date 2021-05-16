@@ -1,6 +1,47 @@
+#include <math.h>
 #include "ad7293.h"
 #include "delay.h"
+#include "global.h"
 #include "spi.h"
+
+uint16_t AD7293_ConvertTemperature(float temperature)
+{
+  uint16_t value;
+
+  if (temperature < 0)
+  {
+    value = 0x800 - (uint16_t)(fabs(temperature) * 8) - 1;
+  } else
+  {
+    value = (uint16_t)(temperature * 8) | 0x800;
+  }
+
+  return (value << 4);
+}
+
+uint16_t AD7293_ConvertBiVoltage(int16_t voltage_mv)
+{
+  uint16_t value;
+
+  if (voltage_mv < -5000)
+    voltage_mv = -5000;
+
+  value = (uint16_t)((uint32_t)(voltage_mv + 5000) * 4096 / 5000);
+
+  return (value << 4);
+}
+
+uint16_t AD7293_ConvertUniVoltage(int16_t voltage_mv)
+{
+  uint16_t value;
+
+  if (voltage_mv < 0)
+    voltage_mv = 0;
+
+  value = (uint16_t)((uint32_t)voltage_mv * 4096 / 5000);
+
+  return (value << 4);
+}
 
 void AD7293_WriteCommonByte(uint8_t reg, uint8_t data)
 {
@@ -261,34 +302,50 @@ bool AD7293_Configuration(void)
   /**< Set high limit for temperature */
   AD7293_WriteWord(
     REGISTER_HIGH_LIMIT_0,
-    REGISTER_HIGHLIMIT_0_TSENSEINT,
-    0xFFF0
+    REGISTER_HIGH_LIMIT_0_TSENSEINT,
+    AD7293_ConvertTemperature((float)EE_TemperatureMax)
   );
   /**< Set high limit for current */
   AD7293_WriteWord(
     REGISTER_HIGH_LIMIT_0,
-    REGISTER_HIGHLIMIT_0_ISENSE0,
+    REGISTER_HIGH_LIMIT_0_ISENSE0,
     0xFFF0
   );
   /**< Set high limit for supply voltage */
   AD7293_WriteWord(
     REGISTER_HIGH_LIMIT_1,
-    REGISTER_HIGHLIMIT_1_RS_0,
+    REGISTER_HIGH_LIMIT_1_RS_0,
     0xFFF0
   );
   /**< Set low limit for temperature */
-
+  AD7293_WriteWord(
+    REGISTER_LOW_LIMIT_0,
+    REGISTER_LOW_LIMIT_0_TSENSEINT,
+    AD7293_ConvertTemperature((float)EE_TemperatureMin)
+  );
   /**< Set low limit for current */
-
+  AD7293_WriteWord(
+    REGISTER_LOW_LIMIT_0,
+    REGISTER_LOW_LIMIT_0_ISENSE0,
+    0xFFF0
+  );
   /**< Set low limit for supply voltage */
 
   /**< Setup output voltages for bi-directional outputs */
+  AD7293_WriteWord(
+    REGISTER_PAGE_RESULT_0,
+    REGISTER_RESULT_0_BI_VOUT0,
+    AD7293_ConvertBiVoltage(EE_GateVoltage[0])
+  );
 
   /**< Wait for 1us */
   DELAY_1USEC;
-
   /**< Setup output voltages for uni-directional outputs */
-
+  AD7293_WriteWord(
+    REGISTER_PAGE_RESULT_0,
+    REGISTER_RESULT_0_UNI_VOUT0,
+    AD7293_ConvertUniVoltage(EE_GateVoltage[4])
+  );
 
   /**< Enable all DACs */
 	AD7293_WriteCommonByte(
