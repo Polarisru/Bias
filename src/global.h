@@ -4,10 +4,12 @@
 #include "defines.h"
 
 /**< EEPROM variables with default values */
-uint8_t EE_ValuePWM;
-uint8_t EE_Time;
-uint8_t EE_FanTimeout;
-uint8_t EE_ErrOn;
+int16_t  EE_GateVoltage[GATES_NUM];
+uint16_t EE_DrainCurrent[DRAINS_NUM];
+uint16_t EE_DrainVoltageMin;
+uint16_t EE_DrainVoltageMax;
+int8_t   EE_TemperatureMin;
+int8_t   EE_TemperatureMax;
 
 TaskHandle_t xTaskComm;
 

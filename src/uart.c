@@ -9,14 +9,16 @@ uint8_t UART_RxHead;
 void UART_IRQHandler(void)
 {
   uint8_t c;
-  BaseType_t xHigherPriorityTaskWoken;
+  BaseType_t xHigherPriorityTaskWoken = false;
+  const uint32_t isr = UART_NUM->ISR;
 
-  if (USART_GetITStatus(UART_NUM, USART_IT_RXNE))
+  //if (USART_GetITStatus(UART_NUM, USART_IT_RXNE))
+  if (isr & USART_ISR_RXNE)
   {
     /**< We have not woken a task at the start of the ISR */
     xHigherPriorityTaskWoken = pdFALSE;
 
-    USART_ClearITPendingBit(UART_NUM, USART_IT_RXNE);
+    //USART_ClearITPendingBit(UART_NUM, USART_IT_RXNE);
 
     c = USART_ReceiveData(UART_NUM) & 0x7F;
 
@@ -41,7 +43,16 @@ void UART_IRQHandler(void)
     /**< Now the buffer is empty we can switch context if necessary */
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   }
-  if (USART_GetITStatus(UART_NUM, USART_IT_TC))
+  if (isr & USART_ISR_ORE)
+  {
+    UART_NUM->ICR = USART_ICR_ORECF;
+  }
+  if (isr & USART_ISR_FE)
+  {
+    UART_NUM->ICR = USART_ICR_FECF;
+  }
+  //if (USART_GetITStatus(UART_NUM, USART_IT_TC))
+  if (isr & USART_ISR_TXE)
   {
     /**< Transmission of one byte completed */
     USART_ClearITPendingBit(UART_NUM, USART_IT_TC);

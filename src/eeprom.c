@@ -7,10 +7,22 @@ uint8_t EEPROM_Page[EEPROM_PAGE_SIZE];
 /**< This array is used to match global variables from RAM with their EEPROM representation */
 const eeVal_t EEPROM_Values[] =
 {
-  {0x00, sizeof(uint8_t), (void*)&EE_ValuePWM,    {.byte = 100}},
-  {0x01, sizeof(uint8_t), (void*)&EE_Time,        {.byte = 1}},
-  {0x02, sizeof(uint8_t), (void*)&EE_FanTimeout,  {.byte = 30}},
-  {0x03, sizeof(uint8_t), (void*)&EE_ErrOn,       {.byte = ERR_MODE_ON}}
+  {0x00, sizeof(int16_t),  (void*)&EE_GateVoltage[0],  {.i16 = 0}},
+  {0x02, sizeof(int16_t),  (void*)&EE_GateVoltage[1],  {.i16 = 0}},
+  {0x04, sizeof(int16_t),  (void*)&EE_GateVoltage[2],  {.i16 = 0}},
+  {0x06, sizeof(int16_t),  (void*)&EE_GateVoltage[3],  {.i16 = 0}},
+  {0x08, sizeof(int16_t),  (void*)&EE_GateVoltage[4],  {.i16 = 0}},
+  {0x0A, sizeof(int16_t),  (void*)&EE_GateVoltage[5],  {.i16 = 0}},
+  {0x0C, sizeof(int16_t),  (void*)&EE_GateVoltage[6],  {.i16 = 0}},
+  {0x0E, sizeof(int16_t),  (void*)&EE_GateVoltage[7],  {.i16 = 0}},
+  {0x10, sizeof(int16_t),  (void*)&EE_DrainCurrent[0], {.u16 = 1000}},
+  {0x12, sizeof(uint16_t), (void*)&EE_DrainCurrent[1], {.u16 = 1000}},
+  {0x14, sizeof(uint16_t), (void*)&EE_DrainCurrent[2], {.u16 = 1000}},
+  {0x16, sizeof(uint16_t), (void*)&EE_DrainCurrent[3], {.u16 = 1000}},
+  {0x20, sizeof(uint16_t), (void*)&EE_DrainVoltageMin, {.u16 = 260}},
+  {0x22, sizeof(uint16_t), (void*)&EE_DrainVoltageMax, {.u16 = 300}},
+  {0x24, sizeof(int8_t),   (void*)&EE_TemperatureMin,  {.i8 = -30}},
+  {0x26, sizeof(int8_t),   (void*)&EE_TemperatureMax,  {.i8 = 85}}
 };
 
 /** \brief Recalculate EEPROM CRC
@@ -22,7 +34,7 @@ uint16_t EEPROM_RecalculateCRC(void)
 {
   uint16_t crc;
 
-  crc = CRC16_CalcKearfott(EEPROM_Page, EEPROM_PAGE_SIZE - sizeof(uint16_t));
+  crc = CRC16_Calc(EEPROM_Page, EEPROM_PAGE_SIZE - sizeof(uint16_t));
   /**< Write new CRC value to the start of EEPROM page */
   memcpy(&EEPROM_Page[EEPROM_PAGE_SIZE - sizeof(uint16_t)], (uint8_t*)&crc, sizeof(uint16_t));
 
@@ -38,7 +50,7 @@ uint16_t EEPROM_CalculateCRC(void)
 {
   uint16_t crc;
 
-  crc = CRC16_CalcKearfott(EEPROM_Page, EEPROM_PAGE_SIZE - sizeof(uint16_t));
+  crc = CRC16_Calc(EEPROM_Page, EEPROM_PAGE_SIZE - sizeof(uint16_t));
 
   return crc;
 }
@@ -119,7 +131,6 @@ void EEPROM_SaveVariable(void *var)
     if (var == EEPROM_Values[i].pVal)
     {
       memcpy(&EEPROM_Page[EEPROM_Values[i].address], var, EEPROM_Values[i].size);
-      //EEPROM_RecalculateCRC();
       EEPROM_SaveBoth();
       break;
     }
@@ -203,7 +214,7 @@ void EEPROM_Configuration(void)
   secondCopy = true;
   EEPROM_LoadCopy(EE_COPY_1);
   crc_read = *(uint16_t*)&EEPROM_Page[EEPROM_PAGE_SIZE - sizeof(uint16_t)];
-  crc = CRC16_CalcKearfott(EEPROM_Page, EEPROM_PAGE_SIZE - sizeof(uint16_t));
+  crc = CRC16_Calc(EEPROM_Page, EEPROM_PAGE_SIZE - sizeof(uint16_t));
   if (crc != crc_read)
   {
     /**< first EEPROM page is corrupted */
@@ -211,7 +222,7 @@ void EEPROM_Configuration(void)
   }
   EEPROM_LoadCopy(EE_COPY_2);
   crc_read = *(uint16_t*)&EEPROM_Page[EEPROM_PAGE_SIZE - sizeof(uint16_t)];
-  crc = CRC16_CalcKearfott(EEPROM_Page, EEPROM_PAGE_SIZE - sizeof(uint16_t));
+  crc = CRC16_Calc(EEPROM_Page, EEPROM_PAGE_SIZE - sizeof(uint16_t));
   if (crc != crc_read)
   {
     /**< second EEPROM page is corrupted */

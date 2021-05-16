@@ -12,8 +12,14 @@
 #define UART_CLOCK_ENABLE       RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE)
 
 #define UART_GPIO             	GPIOA
-#define UART_RX_SOURCE          GPIO_PinSource10
-#define UART_TX_SOURCE          GPIO_PinSource9
+
+#ifdef DEF_REMOTE
+  #define UART_RX_SOURCE          GPIO_PinSource10
+  #define UART_TX_SOURCE          GPIO_PinSource9
+#else
+  #define UART_RX_SOURCE          GPIO_PinSource3
+  #define UART_TX_SOURCE          GPIO_PinSource2
+#endif
 #define UART_IRQn              	USART1_IRQn
 #define UART_IRQHandler        	USART1_IRQHandler
 

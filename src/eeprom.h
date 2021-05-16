@@ -16,18 +16,20 @@ enum
 
 typedef struct
 {
-  uint8_t address;  /**< Address in FRAM */
+  uint8_t address;  /**< Address in EEPROM */
   uint8_t size;     /**< Size in bytes */
   void*   pVal;     /**< Pointer to variable in RAM */
   union {
-    uint8_t  byte;
-    uint16_t word;
-    uint32_t dword;
+    uint8_t  u8;
+    int8_t   i8;
+    uint16_t u16;
+    int16_t  i16;
+    uint32_t u32;
     float    fl;
   } defVal;
 } eeVal_t;
 
-void EEPROM_WriteVar(void *data);
+void EEPROM_SaveVariable(void *var);
 void EEPROM_SetDefaults(void);
 void EEPROM_Configuration(void);
 

@@ -20,13 +20,8 @@
 #define LINE_CRLF           "\n"
 #define LINE_SEPARATE       " - "
 
-#define ERR_STR             "Er"
-#define ERR_STR_SENS        "Sn"
-
-#define ERR_COUNTER_MAX     200
-
-#define MINS_VAL_MIN        1
-#define MINS_VAL_MAX        99
+#define GATES_NUM           8
+#define DRAINS_NUM          4
 
 enum {
   ERR_MODE_OFF,

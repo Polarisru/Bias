@@ -1,18 +1,8 @@
 #include "ad7293.h"
 #include "control.h"
 #include "global.h"
-#include "outputs.h"
 #include "spi.h"
-
-#define ST1_GPIO    GPIOA
-#define ST2_GPIO    GPIOA
-#define ST3_GPIO    GPIOB
-#define UIN_GPIO    GPIOB
-
-#define ST1_PIN     GPIO_Pin_0
-#define ST2_PIN     GPIO_Pin_1
-#define ST3_PIN     GPIO_Pin_0
-#define UIN_PIN     GPIO_Pin_1
+#include "uart.h"
 
 static uint8_t CONTROL_ErrCode;
 
@@ -125,6 +115,8 @@ uint8_t CONTROL_GetErrCode(void)
 /**< Control task for monitoring */
 void CONTROL_Task(void *pvParameters)
 {
+  uint8_t alerts;
+
   CONTROL_Configuration();
   SPI_Configuration();
   AD7293_Configuration();
@@ -133,6 +125,18 @@ void CONTROL_Task(void *pvParameters)
 
   while (1)
   {
-    vTaskDelay(10);
+    alerts = AD7293_GetAlerts();
+    if (alerts & AD7293_ALERTS_MASK)
+    {
+      /**< Something is going wrong, stop working */
+      /**< Reset bi-polar outputs */
+
+      /**< Wait for 100ms */
+      vTaskDelay(100);
+      /**< Disable PA_ON */
+      AD7293_SetPowerOff();
+      /**< Show terminal message with error code */
+
+    }
   }
 }

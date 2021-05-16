@@ -1,7 +1,7 @@
 #include "crc16.h"
 
-/**< CRC16 calculation table compatible with Kearfott CRC */
-const uint16_t CRC16_TableKearfott[256] =
+/**< CRC16 calculation table */
+const uint16_t CRC16_Table[256] =
 {
   0x0000,0x8005,0x800F,0x000A,0x801B,0x001E,0x0014,0x8011,0x8033,0x0036,0x003C,0x8039,0x0028,0x802D,0x8027,0x0022,
   0x8063,0x0066,0x006C,0x8069,0x0078,0x807D,0x8077,0x0072,0x0050,0x8055,0x805F,0x005A,0x804B,0x004E,0x0044,0x8041,
@@ -27,7 +27,7 @@ const uint16_t CRC16_TableKearfott[256] =
  * \param [in] len Length of the data buffer
  * \return checksum as uint16_t
  */
-uint16_t CRC16_CalcKearfott(uint8_t *input, uint8_t len)
+uint16_t CRC16_Calc(uint8_t *input, uint8_t len)
 {
   uint16_t crc = 0xFFFF;
   uint8_t i, index;
@@ -36,7 +36,7 @@ uint16_t CRC16_CalcKearfott(uint8_t *input, uint8_t len)
   {
     index = crc >> 8;
     crc <<= 8;
-    crc ^= CRC16_TableKearfott[index ^ input[i]];
+    crc ^= CRC16_Table[index ^ input[i]];
   }
 
   return crc;

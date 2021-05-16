@@ -1,9 +1,11 @@
 #include "global.h"
 
 /**< EEPROM variables with default values */
-uint8_t EE_ValuePWM;    // default power value
-uint8_t EE_Time;        // default time value in minutes
-uint8_t EE_FanTimeout;  // timeout for fan switch off
-uint8_t EE_ErrOn;       // enable/disable LED errors
+int16_t  EE_GateVoltage[GATES_NUM];
+uint16_t EE_DrainCurrent[DRAINS_NUM];
+uint16_t EE_DrainVoltageMin;
+uint16_t EE_DrainVoltageMax;
+int8_t   EE_TemperatureMin;
+int8_t   EE_TemperatureMax;
 
 TaskHandle_t xTaskComm;

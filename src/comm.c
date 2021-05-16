@@ -1,10 +1,16 @@
+#include "ad7293.h"
 #include "comm.h"
+#include "eeprom.h"
+#include "global.h"
 #include "outputs.h"
 #include "uart.h"
 #include "utils.h"
 
-const char commID[] = "ID";
-const char commOUT[] = "OUT";
+const char commID[]   = "ID";
+const char commGV[]   = "GV";
+const char commDC[]   = "DC";
+const char commPON[]  = "PON";
+const char commPOFF[] = "POFF";
 
 const char commErrOk[]  = "OK";
 const char commErrCmd[] = "E.C";
@@ -31,8 +37,9 @@ void COMM_Task(void *pParameters)
   char buff[128];
   uint16_t pos;
   char *cmd;
-  //uint8_t bVal;
-  uint32_t intVal0, intVal1;
+  int32_t ival32;
+  uint32_t uval32;
+  char ch;
 
   /**< Configure UART connection */
   UART_Configuration();
@@ -65,21 +72,75 @@ void COMM_Task(void *pParameters)
     {
       strcpy(buff, commAnsID);
     } else
-    if (0 == strncmp(cmd, commOUT, strlen(commOUT)))
+    if (0 == strncmp(cmd, commGV, strlen(commGV)))
     {
-      /**< It is a OUT command */
-      if (2 != sscanf(&cmd[strlen(commOUT)], "%1lu:%1lu", &intVal0, &intVal1))
+      /**< It is a GV command */
+      if (sscanf(&cmd[strlen(commGV)], "%1lu%c%ld", &uval32, &ch, &ival32) < 2)
       {
         strcpy(buff, commErrPrm);
       } else
       {
-        //bVal -= '0';
-        if (intVal1 == 0)
-          OUTPUTS_Switch((uint8_t)intVal0, false);
-        else
-          OUTPUTS_Switch((uint8_t)intVal0, true);
-        strcpy(buff, commErrOk);
+        if ((uval32 == 0) || (uval32 > GATES_NUM))
+        {
+          strcpy(buff, commErrPrm);
+        } else
+        if ((ch != '?') && (ch != '='))
+        {
+          strcpy(buff, commErrPrm);
+        } else
+        if (ch == '=')
+        {
+          /**< It's a GVx= command */
+          EE_GateVoltage[uval32 - 1] = ival32;
+          EEPROM_SaveVariable(&EE_GateVoltage[uval32 - 1]);
+          strcpy(buff, commErrOk);
+        } else
+        {
+          /**< It is a GVx? command */
+          sprintf(buff, "%d", EE_GateVoltage[uval32 - 1]);
+        }
       }
+    } else
+    if (0 == strncmp(cmd, commDC, strlen(commDC)))
+    {
+      /**< It is a DC command */
+      if (sscanf(&cmd[strlen(commDC)], "%1lu%c%lu", &uval32, &ch, &ival32) < 2)
+      {
+        strcpy(buff, commErrPrm);
+      } else
+      {
+        if ((uval32 == 0) || (uval32 > DRAINS_NUM))
+        {
+          strcpy(buff, commErrPrm);
+        } else
+        if ((ch != '?') && (ch != '='))
+        {
+          strcpy(buff, commErrPrm);
+        } else
+        if (ch == '=')
+        {
+          /**< It's a DCx= command */
+          EE_DrainCurrent[uval32 - 1] = ival32;
+          EEPROM_SaveVariable(&EE_DrainCurrent[uval32 - 1]);
+          strcpy(buff, commErrOk);
+        } else
+        {
+          /**< It is a DCx? command */
+          sprintf(buff, "%u", EE_DrainCurrent[uval32 - 1]);
+        }
+      }
+    } else
+    if (0 == strncmp(cmd, commPON, strlen(commPON)))
+    {
+      /**< It is a PON command */
+      AD7293_SetPowerOn();
+      strcpy(buff, commErrOk);
+    } else
+    if (0 == strncmp(cmd, commPOFF, strlen(commPOFF)))
+    {
+      /**< It is a POFF command */
+      AD7293_SetPowerOff();
+      strcpy(buff, commErrOk);
     } else
     {
       /**< It is not a right command, show error */
