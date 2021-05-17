@@ -142,7 +142,8 @@ void CONTROL_Task(void *pParameters)
 //    }
     temp = AD7293_GetTemperature(0);
     if (temp > 20)
-      alerts = 1;
-    vTaskDelay(100);
+      vTaskDelay(100);
+    else
+      vTaskDelay(200);
   }
 }
