@@ -215,8 +215,11 @@ float AD7293_GetTemperature(uint8_t channel)
   float temperature = 1.0f;
 
   uint16_t v = AD7293_ReadWord(REGISTER_PAGE_RESULT_0, REGISTER_RESULT_0_TSENSEINT + channel) >> 4;
-  if (v & 0x800)
+  if (v < 0x800)
+  {
     temperature = -1.0f;
+    v = 0x0800 - v;
+  }
   v &= 0x7FF;
   temperature = temperature * v *0.125f;
 
