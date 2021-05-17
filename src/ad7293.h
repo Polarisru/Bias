@@ -227,6 +227,7 @@
 //void AD7293_WriteByte(uint8_t page, uint8_t reg, uint8_t data);
 //void AD7293_WriteWord(uint8_t page, uint8_t reg, uint16_t data);
 void AD7293_SetGateVoltage(uint8_t channel, int16_t voltage);
+float AD7293_GetSupplyVoltage(uint8_t channel);
 float AD7293_GetDrainCurrent(uint8_t channel);
 float AD7293_GetTemperature(uint8_t channel);
 uint16_t AD7293_GetAlerts(void);
