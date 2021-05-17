@@ -274,10 +274,6 @@ bool AD7293_Configuration(void)
   AD7293_Reset();
   /**< Disable all DACs */
   AD7293_WriteCommonByte(REGISTER_COMMON_DAC_ENABLE, 0x00);
-
-  id = AD7293_ReadID();
-  if (id == 0)
-    return false;
 //  /**< Enable GPIOs */
 //	AD7293_WriteWord(
 //		REGISTER_PAGE_CONFIGURATION,
@@ -285,27 +281,27 @@ bool AD7293_Configuration(void)
 //		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_GPIO3
 //  );
 //  AD7293_WriteCommonByte(REGISTER_COMMON_GPIO, 0xFF);
-//  /**< Setup Bipolar DAC Offset, 0b10 << 4: -5 V to 0 V */
-//	AD7293_WriteByte(
-//		REGISTER_PAGE_OFFSET0,
-//		REGISTER_OFFSET_0_BI_VOUT0_OFFSET,
-//		0x20
-//	);
-//	AD7293_WriteByte(
-//		REGISTER_PAGE_OFFSET0,
-//		REGISTER_OFFSET_0_BI_VOUT1_OFFSET,
-//		0x20
-//	);
-//	AD7293_WriteByte(
-//		REGISTER_PAGE_OFFSET0,
-//		REGISTER_OFFSET_0_BI_VOUT2_OFFSET,
-//		0x20
-//	);
-//	AD7293_WriteByte(
-//		REGISTER_PAGE_OFFSET0,
-//		REGISTER_OFFSET_0_BI_VOUT3_OFFSET,
-//		0x20
-//	);
+  /**< Setup Bipolar DAC Offset, 0b10 << 4: -5 V to 0 V */
+	AD7293_WriteByte(
+		REGISTER_PAGE_OFFSET0,
+		REGISTER_OFFSET_0_BI_VOUT0_OFFSET,
+		0x20
+	);
+	AD7293_WriteByte(
+		REGISTER_PAGE_OFFSET0,
+		REGISTER_OFFSET_0_BI_VOUT1_OFFSET,
+		0x20
+	);
+	AD7293_WriteByte(
+		REGISTER_PAGE_OFFSET0,
+		REGISTER_OFFSET_0_BI_VOUT2_OFFSET,
+		0x20
+	);
+	AD7293_WriteByte(
+		REGISTER_PAGE_OFFSET0,
+		REGISTER_OFFSET_0_BI_VOUT3_OFFSET,
+		0x20
+	);
 	/**< Setup internal reference */
 	AD7293_WriteWord(
 		REGISTER_PAGE_CONFIGURATION,
@@ -336,12 +332,12 @@ bool AD7293_Configuration(void)
 		REGISTER_CONFIGURATION_ISENSX_ENABLE_2 |
 		REGISTER_CONFIGURATION_ISENSX_ENABLE_3
   );
-//	/**< Open-loop for all channels */
-//	AD7293_WriteWord(
-//		REGISTER_PAGE_CONFIGURATION,
-//		REGISTER_CONFIGURATION_CLOSE_LOOP_CONTROL,
-//		0x0000
-//	);
+	/**< Open-loop for all channels */
+	AD7293_WriteWord(
+		REGISTER_PAGE_CONFIGURATION,
+		REGISTER_CONFIGURATION_CLOSE_LOOP_CONTROL,
+		0x0000
+	);
 	/**< Enable voltage monitoring in the background */
 	AD7293_WriteWord(
 		REGISTER_PAGE_CONFIGURATION,
@@ -381,11 +377,11 @@ bool AD7293_Configuration(void)
 //  );
 //  /**< Set low limit for supply voltage */
 //
-//  /**< Enable all DACs */
-//	AD7293_WriteCommonByte(
-//		REGISTER_COMMON_DAC_ENABLE,
-//		0xFF
-//	);
+  /**< Enable all DACs */
+	AD7293_WriteCommonByte(
+		REGISTER_COMMON_DAC_ENABLE,
+		0xFF
+	);
 //
 //  /**< Setup output voltages for bi-directional outputs */
 //  for (i = 0; i < 4; i++)
