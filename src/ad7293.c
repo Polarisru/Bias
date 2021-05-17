@@ -264,7 +264,6 @@ void AD7293_Reset(void)
 bool AD7293_Configuration(void)
 {
   uint8_t i;
-  uint16_t id;
 
   AD7293_ReadID();
   if (AD7293_ReadID() != AD7293_ID)
@@ -397,6 +396,8 @@ bool AD7293_Configuration(void)
 //  vTaskDelay(100);
 //  /**< Enable PA_ON */
 //  AD7293_SetPowerOn();
+
+  AD7293_SetGateVoltage(0, -2500);
 
   return true;
 }
