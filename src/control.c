@@ -140,7 +140,7 @@ void CONTROL_Task(void *pParameters)
 //      /**< Show terminal message with error code */
 //
 //    }
-    temp = AD7293_GetSupplyVoltage(0);
+    temp = AD7293_GetDrainCurrent(0);
     if (temp > 20)
       vTaskDelay(100);
     else
