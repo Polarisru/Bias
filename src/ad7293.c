@@ -91,7 +91,7 @@ void AD7293_WriteByte(uint8_t page, uint8_t reg, uint8_t data)
 	tx[0] = AD7293_OP_WRITE | REGISTER_COMMON_PAGE_SELECT_POINTER;
 	tx[1] = page;
 	SPI_Select(SPI_SELECT_AD7293);
-	SPI_Transmit(tx, 3);
+	SPI_Transmit(tx, 2);
 	SPI_Select(SPI_SELECT_NONE);
 
 	tx[0] = AD7293_OP_WRITE | reg;
@@ -108,7 +108,7 @@ void AD7293_WriteWord(uint8_t page, uint8_t reg, uint16_t data)
 	tx[0] = AD7293_OP_WRITE | REGISTER_COMMON_PAGE_SELECT_POINTER;
 	tx[1] = page;
 	SPI_Select(SPI_SELECT_AD7293);
-	SPI_Transmit(tx, 3);
+	SPI_Transmit(tx, 2);
 	SPI_Select(SPI_SELECT_NONE);
 
 	tx[0] = AD7293_OP_WRITE | reg;
@@ -127,7 +127,7 @@ uint8_t AD7293_ReadByte(uint8_t page, uint8_t reg)
 	tx [0] =  AD7293_OP_WRITE | REGISTER_COMMON_PAGE_SELECT_POINTER;
 	tx [1] = page;
 	SPI_Select(SPI_SELECT_AD7293);
-	SPI_Transmit(tx, 3);
+	SPI_Transmit(tx, 2);
 	SPI_Select(SPI_SELECT_NONE);
 
 	tx [0] = AD7293_OP_READ | reg;
@@ -147,7 +147,7 @@ uint16_t AD7293_ReadWord(uint8_t page, uint8_t reg)
 	tx [0] = AD7293_OP_WRITE | REGISTER_COMMON_PAGE_SELECT_POINTER;
 	tx [1] = page;
 	SPI_Select(SPI_SELECT_AD7293);
-	SPI_Transmit(tx, 3);
+	SPI_Transmit(tx, 2);
   SPI_Select(SPI_SELECT_NONE);
 
 	tx [0] = AD7293_OP_READ | reg;
@@ -210,11 +210,17 @@ float AD7293_GetDrainCurrent(uint8_t channel)
   return ((float)v - 2048) * AD7293_REF_VOLTAGE / AD7293_CURRENT_GAIN / 2048 / AD7293_SHUNT;
 }
 
-int8_t AD7293_GetTemperature(uint8_t channel)
+float AD7293_GetTemperature(uint8_t channel)
 {
-  (void)channel;
+  float temperature = 1.0f;
 
-  return 0;
+  uint16_t v = AD7293_ReadWord(REGISTER_PAGE_RESULT_0, REGISTER_RESULT_0_TSENSEINT + channel) >> 4;
+  if (v & 0x800)
+    temperature = -1.0f;
+  v &= 0x7FF;
+  temperature = temperature * v *0.125f;
+
+  return temperature;
 }
 
 uint16_t AD7293_GetAlerts(void)
@@ -297,12 +303,12 @@ bool AD7293_Configuration(void)
 //		REGISTER_OFFSET_0_BI_VOUT3_OFFSET,
 //		0x20
 //	);
-//	/**< Setup internal reference */
-//	AD7293_WriteWord(
-//		REGISTER_PAGE_CONFIGURATION,
-//		REGISTER_CONFIGURATION_GENERAL,
-//		REGISTER_CONFIGURATION_GENERAL_ADC_REF_INT
-//		);
+	/**< Setup internal reference */
+	AD7293_WriteWord(
+		REGISTER_PAGE_CONFIGURATION,
+		REGISTER_CONFIGURATION_GENERAL,
+		REGISTER_CONFIGURATION_GENERAL_ADC_REF_INT
+		);
 //  /**< Setup ISENSEx Gain Register */
 //  AD7293_WriteWord(
 //    REGISTER_PAGE_CONFIGURATION,
@@ -310,14 +316,14 @@ bool AD7293_Configuration(void)
 //    REGISTER_CONFIGURATION_ISENS_0_SET(REGISTER_CONFIGURATION_ISENS_X_GAIN_6_25) |
 //    REGISTER_CONFIGURATION_ISENS_1_SET(REGISTER_CONFIGURATION_ISENS_X_GAIN_6_25)
 //  );
-//  /**< Enable temperature sensors */
-//	AD7293_WriteWord(
-//		REGISTER_PAGE_CONFIGURATION,
-//		REGISTER_CONFIGURATION_TEMPERATURE_SENSOR_ENABLE,
-//		REGISTER_CONFIGURATION_TEMPERATURE_SENSOR_ENABLE_D1 |
-//		REGISTER_CONFIGURATION_TEMPERATURE_SENSOR_ENABLE_D2 |
-//		REGISTER_CONFIGURATION_TEMPERATURE_SENSOR_ENABLE_INT
-//  );
+  /**< Enable temperature sensors */
+	AD7293_WriteWord(
+		REGISTER_PAGE_CONFIGURATION,
+		REGISTER_CONFIGURATION_TEMPERATURE_SENSOR_ENABLE,
+		REGISTER_CONFIGURATION_TEMPERATURE_SENSOR_ENABLE_D1 |
+		REGISTER_CONFIGURATION_TEMPERATURE_SENSOR_ENABLE_D2 |
+		REGISTER_CONFIGURATION_TEMPERATURE_SENSOR_ENABLE_INT
+  );
 //  /**< Enable current sensors */
 //	AD7293_WriteWord(
 //		REGISTER_PAGE_CONFIGURATION,
@@ -333,12 +339,12 @@ bool AD7293_Configuration(void)
 //		REGISTER_CONFIGURATION_CLOSE_LOOP_CONTROL,
 //		0x0000
 //	);
-//	/**< Enable voltage monitoring in the background */
-//	AD7293_WriteWord(
-//		REGISTER_PAGE_CONFIGURATION,
-//		REGISTER_CONFIGURATION_MON_ENABLE,
-//		0xFFFF
-//  );
+	/**< Enable voltage monitoring in the background */
+	AD7293_WriteWord(
+		REGISTER_PAGE_CONFIGURATION,
+		REGISTER_CONFIGURATION_MON_ENABLE,
+		0xFFFF
+  );
 //  /**< Set limits for all important parameters */
 //  /**< Set high limit for temperature */
 //  AD7293_WriteWord(

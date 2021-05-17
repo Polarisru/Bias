@@ -117,6 +117,7 @@ void CONTROL_Task(void *pParameters)
 {
   (void) pParameters;
   uint8_t alerts;
+  float temp;
 
   CONTROL_Configuration();
   SPI_Configuration();
@@ -126,18 +127,20 @@ void CONTROL_Task(void *pParameters)
 
   while (1)
   {
-    alerts = AD7293_GetAlerts();
-    if (alerts & AD7293_ALERTS_MASK)
-    {
-      /**< Something is going wrong, stop working */
-      /**< Reset bi-polar outputs */
-
-      /**< Wait for 100ms */
-      vTaskDelay(100);
-      /**< Disable PA_ON */
-      AD7293_SetPowerOff();
-      /**< Show terminal message with error code */
-
-    }
+//    alerts = AD7293_GetAlerts();
+//    if (alerts & AD7293_ALERTS_MASK)
+//    {
+//      /**< Something is going wrong, stop working */
+//      /**< Reset bi-polar outputs */
+//
+//      /**< Wait for 100ms */
+//      vTaskDelay(100);
+//      /**< Disable PA_ON */
+//      AD7293_SetPowerOff();
+//      /**< Show terminal message with error code */
+//
+//    }
+    temp = AD7293_GetTemperature(0);
+    vTaskDelay(100);
   }
 }
