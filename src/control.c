@@ -113,8 +113,9 @@ uint8_t CONTROL_GetErrCode(void)
 }
 
 /**< Control task for monitoring */
-void CONTROL_Task(void *pvParameters)
+void CONTROL_Task(void *pParameters)
 {
+  (void) pParameters;
   uint8_t alerts;
 
   CONTROL_Configuration();

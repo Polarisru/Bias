@@ -9,8 +9,10 @@
 #include "eeprom.h"
 
 /**< LED blinking task */
-void LED_Task(void *pvParameters)
+void LED_Task(void *pParameters)
 {
+  (void) pParameters;
+
   EEPROM_Configuration();
 
   while (1)

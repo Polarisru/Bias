@@ -229,7 +229,7 @@ void EEPROM_Configuration(void)
     secondCopy = false;
   }
 
-  if ((secondCopy == false) && (secondCopy == false))
+  if ((firstCopy == false) && (secondCopy == false))
   {
     /**< Both copies are corrupted Reload default values */
     EEPROM_LoadDefault();

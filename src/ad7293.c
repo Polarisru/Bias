@@ -43,6 +43,15 @@ uint16_t AD7293_ConvertUniVoltage(int16_t voltage_mv)
   return (value << 4);
 }
 
+uint16_t AD7293_ConvertCurrent(float current)
+{
+  uint16_t value;
+
+  value = (int16_t)(current * AD7293_CURRENT_GAIN * 2048 * AD7293_SHUNT / AD7293_REF_VOLTAGE) + 2048;
+
+  return (value << 4);
+}
+
 void AD7293_WriteCommonByte(uint8_t reg, uint8_t data)
 {
 	uint8_t tx [4] = {0xFF, 0x00, 0x00, 0x00};
@@ -155,9 +164,23 @@ uint16_t AD7293_ReadID(void)
 	return (((uint16_t)rx[0] << 8) | rx[1]);
 }
 
-void AD7293_SetGateVoltage(uint8_t channel, int8_t voltage)
+void AD7293_SetGateVoltage(uint8_t channel, int16_t voltage_mv)
 {
-
+  if (channel < 4)
+  {
+    AD7293_WriteWord(
+      REGISTER_PAGE_RESULT_0,
+      REGISTER_RESULT_0_BI_VOUT0 + channel,
+      AD7293_ConvertBiVoltage(voltage_mv)
+    );
+  } else
+  {
+    AD7293_WriteWord(
+      REGISTER_PAGE_RESULT_0,
+      REGISTER_RESULT_0_UNI_VOUT0 + channel - 4,
+      AD7293_ConvertUniVoltage(voltage_mv)
+    );
+  }
 }
 
 float AD7293_GetSupplyVoltage(uint8_t channel)
@@ -175,11 +198,13 @@ float AD7293_GetDrainCurrent(uint8_t channel)
     return 0;
 
   uint16_t v = AD7293_ReadWord(REGISTER_PAGE_RESULT_0, REGISTER_RESULT_0_ISENSE0 + channel) >> 4;
-  return (float)v * AD7293_REF_VOLTAGE / 4096;
+  return ((float)v - 2048) * AD7293_REF_VOLTAGE / AD7293_CURRENT_GAIN / 2048 / AD7293_SHUNT;
 }
 
 int8_t AD7293_GetTemperature(uint8_t channel)
 {
+  (void)channel;
+
   return 0;
 }
 

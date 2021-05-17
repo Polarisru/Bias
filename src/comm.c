@@ -34,6 +34,7 @@ void COMM_Send(char *buffer)
  */
 void COMM_Task(void *pParameters)
 {
+  (void) pParameters;
   char buff[128];
   uint16_t pos;
   char *cmd;

@@ -10,6 +10,8 @@
 
 /**< Internal reference voltage */
 #define AD7293_REF_VOLTAGE          1.25f
+#define AD7293_CURRENT_GAIN         6.25f
+#define AD7293_SHUNT                0.027f
 
 /**< Pages */
 #define REGISTER_PAGE_RESULT_0      0x00
@@ -222,9 +224,9 @@
 /**< Mask for alert */
 #define AD7293_ALERTS_MASK          0
 
-void AD7293_WriteByte(uint8_t page, uint8_t reg, uint8_t data);
-void AD7293_WriteWord(uint8_t page, uint8_t reg, uint16_t data);
-void AD7293_SetGateVoltage(uint8_t channel, int8_t voltage);
+//void AD7293_WriteByte(uint8_t page, uint8_t reg, uint8_t data);
+//void AD7293_WriteWord(uint8_t page, uint8_t reg, uint16_t data);
+void AD7293_SetGateVoltage(uint8_t channel, int16_t voltage);
 float AD7293_GetDrainCurrent(uint8_t channel);
 int8_t AD7293_GetTemperature(uint8_t channel);
 uint16_t AD7293_GetAlerts(void);
