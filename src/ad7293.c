@@ -343,39 +343,37 @@ bool AD7293_Configuration(void)
 		REGISTER_CONFIGURATION_MON_ENABLE,
 		0xFFFF
   );
-//  /**< Set limits for all important parameters */
-//  /**< Set high limit for temperature */
-//  AD7293_WriteWord(
-//    REGISTER_HIGH_LIMIT_0,
-//    REGISTER_HIGH_LIMIT_0_TSENSEINT,
-//    AD7293_ConvertTemperature((float)EE_TemperatureMax)
-//  );
+  /**< Set limits for all important parameters */
+  /**< Set high limit for temperature */
+  AD7293_WriteWord(
+    REGISTER_HIGH_LIMIT_0,
+    REGISTER_HIGH_LIMIT_0_TSENSEINT,
+    AD7293_ConvertTemperature(40.0f)
+  );
   /**< Set high limit for current */
   AD7293_WriteWord(
     REGISTER_HIGH_LIMIT_0,
     REGISTER_HIGH_LIMIT_0_ISENSE0,
-    AD7293_ConvertCurrent(0.1)
+    AD7293_ConvertCurrent(0.1f)
   );
-//  /**< Set high limit for supply voltage */
-//  AD7293_WriteWord(
-//    REGISTER_HIGH_LIMIT_1,
-//    REGISTER_HIGH_LIMIT_1_RS_0,
-//    0xFFF0
-//  );
-//  /**< Set low limit for temperature */
-//  AD7293_WriteWord(
-//    REGISTER_LOW_LIMIT_0,
-//    REGISTER_LOW_LIMIT_0_TSENSEINT,
-//    AD7293_ConvertTemperature((float)EE_TemperatureMin)
-//  );
-//  /**< Set low limit for current */
-//  AD7293_WriteWord(
-//    REGISTER_LOW_LIMIT_0,
-//    REGISTER_LOW_LIMIT_0_ISENSE0,
-//    0xFFF0
-//  );
-//  /**< Set low limit for supply voltage */
-//
+  /**< Set high limit for supply voltage */
+  AD7293_WriteWord(
+    REGISTER_HIGH_LIMIT_1,
+    REGISTER_HIGH_LIMIT_1_RS_0,
+    AD7293_ConvertSupplyVoltage(300)
+  );
+  /**< Set low limit for temperature */
+  AD7293_WriteWord(
+    REGISTER_LOW_LIMIT_0,
+    REGISTER_LOW_LIMIT_0_TSENSEINT,
+    AD7293_ConvertTemperature(20.0f)
+  );
+  /**< Set low limit for supply voltage */
+  AD7293_WriteWord(
+    REGISTER_LOW_LIMIT_1,
+    REGISTER_LOW_LIMIT_1_RS_0,
+    AD7293_ConvertSupplyVoltage(260)
+  );
   /**< Enable all DACs */
 	AD7293_WriteCommonByte(
 		REGISTER_COMMON_DAC_ENABLE,

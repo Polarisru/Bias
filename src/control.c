@@ -143,9 +143,11 @@ void CONTROL_Task(void *pParameters)
 
     }
     temp = AD7293_GetDrainCurrent(0);
+    temp = AD7293_GetSupplyVoltage(0);
+    temp = AD7293_GetTemperature(0);
     vTaskDelay(100);
     counter++;
     if (counter == 100)
-      AD7293_SetGateVoltage(0, -2900);
+      AD7293_SetGateVoltage(0, -3100);
   }
 }
