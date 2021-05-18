@@ -228,8 +228,7 @@ float AD7293_GetTemperature(uint8_t channel)
 
 uint16_t AD7293_GetAlerts(void)
 {
-  //return AD7293_ReadWord(REGISTER_ALERT, REGISTER_ALERT_SUM);
-  return AD7293_ReadWord(REGISTER_ALERT, REGISTER_ALERT_ISENSX);
+  return AD7293_ReadWord(REGISTER_ALERT, REGISTER_ALERT_SUM);
 }
 
 void AD7293_ResetAlerts(void)

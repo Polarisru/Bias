@@ -129,8 +129,7 @@ void CONTROL_Task(void *pParameters)
   while (1)
   {
     alerts = AD7293_GetAlerts();
-    //if (alerts & AD7293_ALERTS_MASK)
-    if (alerts > 0)
+    if (alerts & AD7293_ALERTS_MASK)
     {
       /**< Something is going wrong, stop working */
       /**< Reset bi-polar outputs */
