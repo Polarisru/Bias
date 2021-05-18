@@ -118,6 +118,7 @@ void CONTROL_Task(void *pParameters)
   (void) pParameters;
   uint8_t alerts;
   float temp;
+  uint16_t counter = 0;
 
   CONTROL_Configuration();
   SPI_Configuration();
@@ -142,9 +143,9 @@ void CONTROL_Task(void *pParameters)
 
     }
     temp = AD7293_GetDrainCurrent(0);
-    if (temp > 20)
-      vTaskDelay(100);
-    else
-      vTaskDelay(200);
+    vTaskDelay(100);
+    counter++;
+    if (counter == 100)
+      AD7293_SetGateVoltage(0, -2800);
   }
 }
