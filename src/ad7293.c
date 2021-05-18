@@ -397,11 +397,7 @@ bool AD7293_Configuration(void)
 //  /**< Enable PA_ON */
 //  AD7293_SetPowerOn();
 
-  AD7293_SetGateVoltage(0, -2500);
-  AD7293_SetGateVoltage(4, 1000);
-  AD7293_SetGateVoltage(5, 2000);
-  AD7293_SetGateVoltage(6, 3000);
-  AD7293_SetGateVoltage(7, 4000);
+  AD7293_SetGateVoltage(0, -3000);
 
   return true;
 }
