@@ -129,7 +129,8 @@ void CONTROL_Task(void *pParameters)
   while (1)
   {
     alerts = AD7293_GetAlerts();
-    if (alerts & AD7293_ALERTS_MASK)
+    //if (alerts & AD7293_ALERTS_MASK)
+    if (alerts > 0)
     {
       /**< Something is going wrong, stop working */
       /**< Reset bi-polar outputs */
@@ -146,6 +147,6 @@ void CONTROL_Task(void *pParameters)
     vTaskDelay(100);
     counter++;
     if (counter == 100)
-      AD7293_SetGateVoltage(0, -2800);
+      AD7293_SetGateVoltage(0, -2900);
   }
 }
