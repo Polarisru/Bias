@@ -116,7 +116,7 @@ uint8_t CONTROL_GetErrCode(void)
 void CONTROL_Task(void *pParameters)
 {
   (void) pParameters;
-  uint8_t alerts;
+  uint16_t alerts;
   float temp;
   uint16_t counter = 0;
 
