@@ -127,19 +127,20 @@ void CONTROL_Task(void *pParameters)
 
   while (1)
   {
-//    alerts = AD7293_GetAlerts();
-//    if (alerts & AD7293_ALERTS_MASK)
-//    {
-//      /**< Something is going wrong, stop working */
-//      /**< Reset bi-polar outputs */
-//
-//      /**< Wait for 100ms */
-//      vTaskDelay(100);
-//      /**< Disable PA_ON */
-//      AD7293_SetPowerOff();
-//      /**< Show terminal message with error code */
-//
-//    }
+    alerts = AD7293_GetAlerts();
+    if (alerts & AD7293_ALERTS_MASK)
+    {
+      /**< Something is going wrong, stop working */
+      /**< Reset bi-polar outputs */
+      AD7293_SetGateVoltage(0, 0);
+
+      /**< Wait for 100ms */
+      vTaskDelay(100);
+      /**< Disable PA_ON */
+      AD7293_SetPowerOff();
+      /**< Show terminal message with error code */
+
+    }
     temp = AD7293_GetDrainCurrent(0);
     if (temp > 20)
       vTaskDelay(100);

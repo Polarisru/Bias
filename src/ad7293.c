@@ -350,12 +350,12 @@ bool AD7293_Configuration(void)
 //    REGISTER_HIGH_LIMIT_0_TSENSEINT,
 //    AD7293_ConvertTemperature((float)EE_TemperatureMax)
 //  );
-//  /**< Set high limit for current */
-//  AD7293_WriteWord(
-//    REGISTER_HIGH_LIMIT_0,
-//    REGISTER_HIGH_LIMIT_0_ISENSE0,
-//    0xFFF0
-//  );
+  /**< Set high limit for current */
+  AD7293_WriteWord(
+    REGISTER_HIGH_LIMIT_0,
+    REGISTER_HIGH_LIMIT_0_ISENSE0,
+    AD7293_ConvertCurrent(0.1)
+  );
 //  /**< Set high limit for supply voltage */
 //  AD7293_WriteWord(
 //    REGISTER_HIGH_LIMIT_1,
@@ -391,13 +391,13 @@ bool AD7293_Configuration(void)
 //  /**< Setup output voltages for uni-directional outputs */
 //  for (i = 4; i < GATES_NUM; i++)
 //    AD7293_SetGateVoltage(i, EE_GateVoltage[i]);
-//
-//  /**< Wait for 100ms before enabling output */
-//  vTaskDelay(100);
-//  /**< Enable PA_ON */
-//  AD7293_SetPowerOn();
 
   AD7293_SetGateVoltage(0, -3000);
+
+  /**< Wait for 100ms before enabling output */
+  vTaskDelay(100);
+  /**< Enable PA_ON */
+  AD7293_SetPowerOn();
 
   return true;
 }

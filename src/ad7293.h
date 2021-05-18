@@ -221,8 +221,13 @@
 #define REGISTER_ALERT_RSXMON       0x19
 #define REGISTER_ALERT_INTLIMITX    0x1A
 
+#define REGISTER_ALERT_SUM_ISENSX_HIGH   0x0800
+#define REGISTER_ALERT_SUM_TSENSX_HIGH   0x0400
+#define REGISTER_ALERT_SUM_ISENSX_LOW    0x0008
+#define REGISTER_ALERT_SUM_TSENSX_LOW    0x0004
+
 /**< Mask for alert */
-#define AD7293_ALERTS_MASK          0
+#define AD7293_ALERTS_MASK          (REGISTER_ALERT_SUM_ISENSX_HIGH | REGISTER_ALERT_SUM_ISENSX_LOW)
 
 //void AD7293_WriteByte(uint8_t page, uint8_t reg, uint8_t data);
 //void AD7293_WriteWord(uint8_t page, uint8_t reg, uint16_t data);
