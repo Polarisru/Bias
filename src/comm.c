@@ -52,7 +52,7 @@ void COMM_Task(void *pParameters)
   COMM_Send("---Actual settings---\n");
   for (uval32 = 0; uval32 < GATES_NUM; uval32++)
   {
-    sprintf(buff, "Gate%1lu voltage: %d.%03dV\n", uval32 + 1, EE_GateVoltage[uval32] / 1000, EE_GateVoltage[uval32] % 1000);
+    sprintf(buff, "Gate%1lu voltage: %d.%03dV\n", uval32 + 1, EE_GateVoltage[uval32] / 1000, -(EE_GateVoltage[uval32] % 1000));
     COMM_Send(buff);
   }
   for (uval32 = 0; uval32 < DRAINS_NUM; uval32++)
