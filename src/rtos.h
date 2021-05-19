@@ -7,8 +7,8 @@
 #include "queue.h"
 #include "semphr.h"
 
-#define LED_TASK_PRIORITY       (tskIDLE_PRIORITY + 1)
-#define COMM_TASK_PRIORITY      (tskIDLE_PRIORITY + 2)
-#define CONTROL_TASK_PRIORITY   (tskIDLE_PRIORITY + 3)
+#define LED_TASK_PRIORITY       (tskIDLE_PRIORITY + 2)
+#define COMM_TASK_PRIORITY      (tskIDLE_PRIORITY + 3)
+#define CONTROL_TASK_PRIORITY   (tskIDLE_PRIORITY + 1)
 
 #endif

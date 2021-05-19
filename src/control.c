@@ -237,6 +237,6 @@ void CONTROL_Task(void *pParameters)
     vTaskDelay(100);
     counter++;
     if (counter == 100)
-      AD7293_SetGateVoltage(0, -3100);
+      AD7293_SetGateVoltage(0, -2900);
   }
 }
