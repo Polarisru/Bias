@@ -125,6 +125,7 @@ void CONTROL_Task(void *pParameters)
   uint16_t status;
   float temp;
   uint16_t counter = 0;
+  uint8_t i;
 
   CONTROL_ErrCode = ERR_NONE;
 

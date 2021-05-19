@@ -13,8 +13,6 @@ void LED_Task(void *pParameters)
 {
   (void) pParameters;
 
-  EEPROM_Configuration();
-
   while (1)
   {
     #ifdef DEF_REMOTE
@@ -36,6 +34,7 @@ int main(void)
   OUTPUTS_Configuration();
   //INPUTS_Configuration();
   //ANALOG_Configuration();
+  EEPROM_Configuration();
 
   /**< Create RTOS tasks */
   xTaskCreate(LED_Task, "LedTask", 50, NULL, LED_TASK_PRIORITY, NULL);
