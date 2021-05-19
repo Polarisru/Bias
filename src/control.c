@@ -135,6 +135,8 @@ void CONTROL_Task(void *pParameters)
 
   CONTROL_ResetErrCode();
 
+  vTaskDelay(100);
+
   while (1)
   {
     if (CONTROL_ErrCode != ERR_NONE)
