@@ -187,6 +187,7 @@ void COMM_Task(void *pParameters)
             EE_TemperatureMin = (int8_t)ival32;
             EE_TemperatureMax = (int8_t)uval32;
             EEPROM_SaveAllVariables();
+            strcpy(buff, commErrOk);
           }
         }
       }
