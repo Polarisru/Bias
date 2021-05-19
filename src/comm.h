@@ -5,6 +5,7 @@
 
 #define COMM_BUFFER_SIZE      UART_BUFFER_SIZE
 
+void COMM_Send(char *buffer);
 void COMM_Task(void *pParameters);
 
 #endif

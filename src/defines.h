@@ -23,9 +23,26 @@
 #define GATES_NUM           8
 #define DRAINS_NUM          4
 
+#define GATE14_MIN_VALUE    -5000
+#define GATE14_MAX_VALUE    0
+#define GATE58_MIN_VALUE    0
+#define GATE58_MAX_VALUE    5000
+
 enum {
-  ERR_MODE_OFF,
-  ERR_MODE_ON
+  ERR_NONE,
+  ERR_SUPPLY_LOW,
+  ERR_SUPPLY_HIGH,
+  ERR_TEMP_INT_LOW,
+  ERR_TEMP_INT_HIGH,
+  ERR_TEMP_D0_LOW,
+  ERR_TEMP_D0_HIGH,
+  ERR_TEMP_D1_LOW,
+  ERR_TEMP_D1_HIGH,
+  ERR_DC1,
+  ERR_DC2,
+  ERR_DC3,
+  ERR_DC4,
+  ERR_UNKNOWN
 };
 
 #endif

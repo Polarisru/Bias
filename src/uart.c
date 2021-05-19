@@ -63,7 +63,7 @@ void UART_IRQHandler(void)
  *
  * \param [in] buf Output data buffer for sending via UART
  * \param [in] len Length of data to send
- * \return Nothing
+ * \return void
  *
  */
 void UART_Send(uint8_t *data, uint8_t len)
@@ -79,7 +79,7 @@ void UART_Send(uint8_t *data, uint8_t len)
 
 /** \brief Initialize UART module for communication with PC
  *
- * \return Nothing
+ * \return void
  *
  */
 void UART_Configuration(void)

@@ -1,5 +1,6 @@
 #include "ad7293.h"
 #include "comm.h"
+#include "control.h"
 #include "eeprom.h"
 #include "global.h"
 #include "outputs.h"
@@ -9,6 +10,8 @@
 const char commID[]   = "ID";
 const char commGV[]   = "GV";
 const char commDC[]   = "DC";
+const char commT[]    = "T";
+const char commE[]    = "E?";
 const char commPON[]  = "PON";
 const char commPOFF[] = "POFF";
 
@@ -44,6 +47,23 @@ void COMM_Task(void *pParameters)
 
   /**< Configure UART connection */
   UART_Configuration();
+
+  /**< Print actual configuration */
+  COMM_Send("---Actual settings---\n");
+  for (uval32 = 0; uval32 < GATES_NUM; uval32++)
+  {
+    sprintf(buff, "Gate%1lu voltage: %d.%03dV\n", uval32 + 1, EE_GateVoltage[uval32] / 1000, EE_GateVoltage[uval32] % 1000);
+    COMM_Send(buff);
+  }
+  for (uval32 = 0; uval32 < DRAINS_NUM; uval32++)
+  {
+    sprintf(buff, "Drain%1lu current: %dmA\n", uval32 + 1, EE_DrainCurrent[uval32]);
+    COMM_Send(buff);
+  }
+  sprintf(buff, "Supply voltage range: %d.%01d..%d.%01dV\n", EE_DrainVoltageMin / 10, EE_DrainVoltageMin % 10, EE_DrainVoltageMax / 10, EE_DrainVoltageMax % 10);
+  COMM_Send(buff);
+  sprintf(buff, "Temperature range: %d..%d°C\n", EE_TemperatureMin, EE_TemperatureMax);
+  COMM_Send(buff);
 
   while (1)
   {
@@ -92,6 +112,19 @@ void COMM_Task(void *pParameters)
         if (ch == '=')
         {
           /**< It's a GVx= command */
+          if (uval32 < 4)
+          {
+            if (ival32 < GATE14_MIN_VALUE)
+              ival32 = GATE14_MIN_VALUE;
+            if (ival32 > GATE14_MAX_VALUE)
+              ival32 = GATE14_MAX_VALUE;
+          } else
+          {
+            if (ival32 < GATE58_MIN_VALUE)
+              ival32 = GATE58_MIN_VALUE;
+            if (ival32 > GATE58_MAX_VALUE)
+              ival32 = GATE58_MAX_VALUE;
+          }
           EE_GateVoltage[uval32 - 1] = ival32;
           EEPROM_SaveVariable(&EE_GateVoltage[uval32 - 1]);
           strcpy(buff, commErrOk);
@@ -130,6 +163,38 @@ void COMM_Task(void *pParameters)
           sprintf(buff, "%u", EE_DrainCurrent[uval32 - 1]);
         }
       }
+    } else
+    if (0 == strncmp(cmd, commT, strlen(commT)))
+    {
+      /**< It is a T command */
+      if (sscanf(&cmd[strlen(commT)], "%c%lu..%lu", &ch, &ival32, &uval32) < 1)
+      {
+        strcpy(buff, commErrPrm);
+      } else
+      {
+        if ((ch != '?') && (ch != '='))
+        {
+          strcpy(buff, commErrPrm);
+        } else
+        {
+          if (ch == '?')
+          {
+            /**< It is a T? command */
+            sprintf(buff, "%d..%d", EE_TemperatureMin, EE_TemperatureMax);
+          } else
+          {
+            /**< It's a T= command */
+            EE_TemperatureMin = (int8_t)ival32;
+            EE_TemperatureMax = (int8_t)uval32;
+            EEPROM_SaveAllVariables();
+          }
+        }
+      }
+    } else
+    if (0 == strncmp(cmd, commE, strlen(commE)))
+    {
+      /**< It's a E? command */
+      sprintf(buff, "%u", CONTROL_GetErrCode());
     } else
     if (0 == strncmp(cmd, commPON, strlen(commPON)))
     {

@@ -30,6 +30,7 @@ typedef struct
 } eeVal_t;
 
 void EEPROM_SaveVariable(void *var);
+void EEPROM_SaveAllVariables(void);
 void EEPROM_SetDefaults(void);
 void EEPROM_Configuration(void);
 

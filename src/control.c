@@ -1,4 +1,5 @@
 #include "ad7293.h"
+#include "comm.h"
 #include "control.h"
 #include "global.h"
 #include "spi.h"
@@ -6,8 +7,13 @@
 
 static uint8_t CONTROL_ErrCode;
 
-#define ADC1_DR_Address             0x40012440
+//#define ADC1_DR_Address             0x40012440
 
+/** \brief Configure control module
+ *
+ * \return void
+ *
+ */
 void CONTROL_Configuration(void)
 {
 //  ADC_InitTypeDef ADC_InitStruct;
@@ -93,12 +99,12 @@ void CONTROL_Configuration(void)
 
 /** \brief Reset error codes
  *
- * \return void Nothing
+ * \return void
  *
  */
 void CONTROL_ResetErrCode(void)
 {
-  //CONTROL_ErrCode = ERR_CODE_NONE;
+  CONTROL_ErrCode = ERR_NONE;
 }
 
 /** \brief Get error codes value
@@ -108,7 +114,6 @@ void CONTROL_ResetErrCode(void)
  */
 uint8_t CONTROL_GetErrCode(void)
 {
-  //return ERR_CODE_NONE;
   return CONTROL_ErrCode;
 }
 
@@ -117,9 +122,13 @@ void CONTROL_Task(void *pParameters)
 {
   (void) pParameters;
   uint16_t alerts;
+  uint16_t status;
   float temp;
   uint16_t counter = 0;
 
+  CONTROL_ErrCode = ERR_NONE;
+
+  /**< Configure peripherals */
   CONTROL_Configuration();
   SPI_Configuration();
   AD7293_Configuration();
@@ -128,6 +137,8 @@ void CONTROL_Task(void *pParameters)
 
   while (1)
   {
+    if (CONTROL_ErrCode != ERR_NONE)
+      continue;
     alerts = AD7293_GetAlerts();
     if (alerts & AD7293_ALERTS_MASK)
     {
@@ -140,7 +151,81 @@ void CONTROL_Task(void *pParameters)
       /**< Disable PA_ON */
       AD7293_SetPowerOff();
       /**< Show terminal message with error code */
-
+      COMM_Send("ERROR: ");
+      if (alerts & REGISTER_ALERT_SUM_RSX_LOW)
+      {
+        COMM_Send("Power supply low");
+        CONTROL_ErrCode = ERR_SUPPLY_LOW;
+      } else
+      if (alerts & REGISTER_ALERT_SUM_RSX_HIGH)
+      {
+        COMM_Send("Power supply high");
+        CONTROL_ErrCode = ERR_SUPPLY_HIGH;
+      } else
+      if (alerts & (REGISTER_ALERT_SUM_TSENSX_HIGH | REGISTER_ALERT_SUM_TSENSX_LOW))
+      {
+        status = AD7293_GetTemperatureAlerts();
+        if (status & REGISTER_ALERT_TSENSX_HIGH_D1)
+        {
+          COMM_Send("D1 Temperature high");
+          CONTROL_ErrCode = ERR_TEMP_D1_HIGH;
+        } else
+        if (status & REGISTER_ALERT_TSENSX_HIGH_D0)
+        {
+          COMM_Send("D0 Temperature high");
+          CONTROL_ErrCode = ERR_TEMP_D0_HIGH;
+        } else
+        if (status & REGISTER_ALERT_TSENSX_HIGH_INT)
+        {
+          COMM_Send("INT Temperature high");
+          CONTROL_ErrCode = ERR_TEMP_INT_HIGH;
+        } else
+        if (status & REGISTER_ALERT_TSENSX_LOW_D1)
+        {
+          COMM_Send("D1 Temperature low");
+          CONTROL_ErrCode = ERR_TEMP_D1_LOW;
+        } else
+        if (status & REGISTER_ALERT_TSENSX_LOW_D0)
+        {
+          COMM_Send("D0 Temperature low");
+          CONTROL_ErrCode = ERR_TEMP_D0_LOW;
+        } else
+        if (status & REGISTER_ALERT_TSENSX_LOW_INT)
+        {
+          COMM_Send("INT Temperature low");
+          CONTROL_ErrCode = ERR_TEMP_INT_LOW;
+        }
+      } else
+      if (alerts & REGISTER_ALERT_SUM_ISENSX_HIGH)
+      {
+        status = AD7293_GetCurrentAlerts();
+        if (status & REGISTER_ALERT_ISENSX_HIGH_0)
+        {
+          COMM_Send("Drain1 current high");
+          CONTROL_ErrCode = ERR_DC1;
+        } else
+        if (status & REGISTER_ALERT_ISENSX_HIGH_1)
+        {
+          COMM_Send("Drain2 current high");
+          CONTROL_ErrCode = ERR_DC2;
+        } else
+        if (status & REGISTER_ALERT_ISENSX_HIGH_2)
+        {
+          COMM_Send("Drain3 current high");
+          CONTROL_ErrCode = ERR_DC3;
+        } else
+        if (status & REGISTER_ALERT_ISENSX_HIGH_3)
+        {
+          COMM_Send("Drain4 current high");
+          CONTROL_ErrCode = ERR_DC4;
+        }
+      }
+      if (CONTROL_ErrCode == ERR_NONE)
+      {
+        COMM_Send("Unknown");
+        CONTROL_ErrCode = ERR_UNKNOWN;
+      }
+      COMM_Send("\n");
     }
     temp = AD7293_GetDrainCurrent(0);
     temp = AD7293_GetSupplyVoltage(0);

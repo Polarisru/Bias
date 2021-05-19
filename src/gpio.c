@@ -2,7 +2,7 @@
 
 /** \brief Initialize GPIO module
  *
- * \return Nothing
+ * \return void
  *
  */
 void GPIO_Configuration(void)

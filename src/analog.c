@@ -1,5 +1,10 @@
 #include "analog.h"
 
+/** \brief Analog module configuration
+ *
+ * \return void
+ *
+ */
 void ANALOG_Configuration(void)
 {
   ADC_InitTypeDef ADC_InitStruct;
@@ -33,6 +38,11 @@ void ANALOG_Configuration(void)
   ADC_StartOfConversion(ADC1);
 }
 
+/** \brief Get converted value from ADC
+ *
+ * \return Last converted value
+ *
+ */
 uint8_t ANALOG_GetValue(void)
 {
   return (uint8_t)ADC_GetConversionValue(ADC1);

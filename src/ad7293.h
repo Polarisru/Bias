@@ -13,6 +13,14 @@
 #define AD7293_CURRENT_GAIN         6.25f
 #define AD7293_SHUNT                0.027f
 
+/**< Temperature channels */
+enum {
+  AD7293_TEMPERATURE_INT,
+  AD7293_TEMPERATURE_D0,
+  AD7293_TEMPERATURE_D1,
+  AD7293_TEMPERATURE_LAST
+};
+
 /**< Pages */
 #define REGISTER_PAGE_RESULT_0      0x00
 #define REGISTER_PAGE_RESULT_1      0x01
@@ -221,6 +229,7 @@
 #define REGISTER_ALERT_RSXMON       0x19
 #define REGISTER_ALERT_INTLIMITX    0x1A
 
+/**< Register: Alert Summary, 0x10 */
 #define REGISTER_ALERT_SUM_RSX_HIGH      0x8000
 #define REGISTER_ALERT_SUM_BIVXOUT_HIGH  0x4000
 #define REGISTER_ALERT_SUM_ISENSX_HIGH   0x0800
@@ -232,18 +241,36 @@
 #define REGISTER_ALERT_SUM_TSENSX_LOW    0x0004
 #define REGISTER_ALERT_SUM_VINX_LOW      0x0001
 
+/**< Register: Temperature Sensor (TSENSEx) Alert, 0x14 */
+#define REGISTER_ALERT_TSENSX_HIGH_D1    0x0400
+#define REGISTER_ALERT_TSENSX_HIGH_D0    0x0200
+#define REGISTER_ALERT_TSENSX_HIGH_INT   0x0100
+#define REGISTER_ALERT_TSENSX_LOW_D1     0x0004
+#define REGISTER_ALERT_TSENSX_LOW_D0     0x0002
+#define REGISTER_ALERT_TSENSX_LOW_INT    0x0001
+
+/**< Register: Current Sensor (ISENSEx) Alert, 0x15 */
+#define REGISTER_ALERT_ISENSX_HIGH_3     0x0800
+#define REGISTER_ALERT_ISENSX_HIGH_2     0x0400
+#define REGISTER_ALERT_ISENSX_HIGH_1     0x0200
+#define REGISTER_ALERT_ISENSX_HIGH_0     0x0100
+#define REGISTER_ALERT_ISENSX_LOW_3      0x0008
+#define REGISTER_ALERT_ISENSX_LOW_2      0x0004
+#define REGISTER_ALERT_ISENSX_LOW_1      0x0002
+#define REGISTER_ALERT_ISENSX_LOW_0      0x0001
+
 /**< Mask for alert */
 #define AD7293_ALERTS_MASK          (REGISTER_ALERT_SUM_RSX_HIGH | REGISTER_ALERT_SUM_RSX_LOW | \
                                      REGISTER_ALERT_SUM_ISENSX_HIGH | \
                                      REGISTER_ALERT_SUM_TSENSX_HIGH | REGISTER_ALERT_SUM_TSENSX_LOW)
 
-//void AD7293_WriteByte(uint8_t page, uint8_t reg, uint8_t data);
-//void AD7293_WriteWord(uint8_t page, uint8_t reg, uint16_t data);
 void AD7293_SetGateVoltage(uint8_t channel, int16_t voltage);
 float AD7293_GetSupplyVoltage(uint8_t channel);
 float AD7293_GetDrainCurrent(uint8_t channel);
 float AD7293_GetTemperature(uint8_t channel);
 uint16_t AD7293_GetAlerts(void);
+uint16_t AD7293_GetTemperatureAlerts(void);
+uint16_t AD7293_GetCurrentAlerts(void);
 void AD7293_ResetAlerts(void);
 void AD7293_SetPowerOn(void);
 void AD7293_SetPowerOff(void);

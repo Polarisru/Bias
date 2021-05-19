@@ -2,18 +2,7 @@
 
 /**< Structure with hardware connections for inputs */
 const TInput INPUTS_Pins[INPUT_LAST] = {
-  {INPUT_KEY1_GPIO, INPUT_KEY1_PIN},
-  {INPUT_KEY2_GPIO, INPUT_KEY2_PIN},
-  {INPUT_KEY3_GPIO, INPUT_KEY3_PIN},
-  {INPUT_KEY4_GPIO, INPUT_KEY4_PIN},
-  {INPUT_KEY5_GPIO, INPUT_KEY5_PIN},
-  {INPUT_SENS_GPIO, INPUT_SENS_PIN}
-  //{INPUT_ST1_GPIO, INPUT_ST1_PIN},
-  //{INPUT_ST2_GPIO, INPUT_ST2_PIN},
-  //{INPUT_ST3_GPIO, INPUT_ST3_PIN},
-  //{INPUT_ST4_GPIO, INPUT_ST4_PIN},
-  //{INPUT_ST5_GPIO, INPUT_ST5_PIN},
-  //{INPUT_ST6_GPIO, INPUT_ST6_PIN}
+  {INPUT_KEY1_GPIO, INPUT_KEY1_PIN}
 };
 
 /** \brief Check if input is active (high)
@@ -45,10 +34,7 @@ void INPUTS_Configuration(void)
 
   for (i = 0; i < INPUT_LAST; i++)
   {
-    //if ((i >= INPUT_ST1) && (i <= INPUT_ST3))
-    //  GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
-    //else
-      GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;
+    GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;
     GPIO_InitStruct.GPIO_Pin = INPUTS_Pins[i].GPIO_Pin;
     GPIO_Init(INPUTS_Pins[i].GPIO, &GPIO_InitStruct);
   }

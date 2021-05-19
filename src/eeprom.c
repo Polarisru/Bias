@@ -7,11 +7,11 @@ uint8_t EEPROM_Page[EEPROM_PAGE_SIZE];
 /**< This array is used to match global variables from RAM with their EEPROM representation */
 const eeVal_t EEPROM_Values[] =
 {
-  {0x00, sizeof(int16_t),  (void*)&EE_GateVoltage[0],  {.i16 = -2500}},
-  {0x02, sizeof(int16_t),  (void*)&EE_GateVoltage[1],  {.i16 = 0}},
-  {0x04, sizeof(int16_t),  (void*)&EE_GateVoltage[2],  {.i16 = 0}},
-  {0x06, sizeof(int16_t),  (void*)&EE_GateVoltage[3],  {.i16 = 0}},
-  {0x08, sizeof(int16_t),  (void*)&EE_GateVoltage[4],  {.i16 = 2200}},
+  {0x00, sizeof(int16_t),  (void*)&EE_GateVoltage[0],  {.i16 = -5000}},
+  {0x02, sizeof(int16_t),  (void*)&EE_GateVoltage[1],  {.i16 = -5000}},
+  {0x04, sizeof(int16_t),  (void*)&EE_GateVoltage[2],  {.i16 = -5000}},
+  {0x06, sizeof(int16_t),  (void*)&EE_GateVoltage[3],  {.i16 = -5000}},
+  {0x08, sizeof(int16_t),  (void*)&EE_GateVoltage[4],  {.i16 = 0}},
   {0x0A, sizeof(int16_t),  (void*)&EE_GateVoltage[5],  {.i16 = 0}},
   {0x0C, sizeof(int16_t),  (void*)&EE_GateVoltage[6],  {.i16 = 0}},
   {0x0E, sizeof(int16_t),  (void*)&EE_GateVoltage[7],  {.i16 = 0}},
