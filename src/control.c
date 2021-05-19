@@ -146,7 +146,8 @@ void CONTROL_Task(void *pParameters)
     {
       /**< Something is going wrong, stop working */
       /**< Reset bi-polar outputs */
-      AD7293_SetGateVoltage(0, 0);
+      for (i = 0; i < 4; i++)
+        AD7293_SetGateVoltage(i, GATE14_MIN_VALUE);
 
       /**< Wait for 100ms */
       vTaskDelay(100);
