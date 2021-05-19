@@ -4,18 +4,19 @@
 #include "defines.h"
 
 enum {
-  INPUT_KEY1,
+  INPUT_RESET,
   INPUT_LAST
 };
 
-#define INPUT_KEY1_PIN      GPIO_Pin_13
+#define INPUT_RESET_PIN     GPIO_Pin_2
 
-#define INPUT_KEY1_GPIO     GPIOC
+#define INPUT_RESET_GPIO    GPIOA
 
 typedef struct
 {
-  GPIO_TypeDef* GPIO;
-  uint16_t      GPIO_Pin;
+  GPIO_TypeDef*     GPIO;
+  uint16_t          GPIO_Pin;
+  GPIOPuPd_TypeDef  PuPd;
 } TInput;
 
 void INPUTS_Configuration(void);

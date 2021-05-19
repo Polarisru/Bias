@@ -43,6 +43,16 @@ enum {
 #define REGISTER_COMMON_DEVICE_ID           0x0C /*  */
 #define REGISTER_COMMON_SOFTWARE_RESET      0x0F /*   */
 
+/**< Register: GPIO Register, 0x05 */
+#define REGISTER_COMMON_GPIO_GPIO0  0x01
+#define REGISTER_COMMON_GPIO_GPIO1  0x02
+#define REGISTER_COMMON_GPIO_GPIO2  0x04
+#define REGISTER_COMMON_GPIO_GPIO3  0x08
+#define REGISTER_COMMON_GPIO_GPIO4  0x10
+#define REGISTER_COMMON_GPIO_GPIO5  0x20
+#define REGISTER_COMMON_GPIO_GPIO6  0x40
+#define REGISTER_COMMON_GPIO_GPIO7  0x80
+
 /**< Page: RESULT0 (0x00) */
 #define REGISTER_RESULT_0_VIN0      0x10
 #define REGISTER_RESULT_0_VIN1      0x11
@@ -264,6 +274,9 @@ enum {
                                      REGISTER_ALERT_SUM_ISENSX_HIGH | \
                                      REGISTER_ALERT_SUM_TSENSX_HIGH | REGISTER_ALERT_SUM_TSENSX_LOW)
 
+/**< Select GPIO pin for LDAC */
+#define AD7293_LDAC_PIN             REGISTER_COMMON_GPIO_GPIO7
+
 void AD7293_SetGateVoltage(uint8_t channel, int16_t voltage);
 float AD7293_GetSupplyVoltage(uint8_t channel);
 float AD7293_GetDrainCurrent(uint8_t channel);
@@ -272,6 +285,7 @@ uint16_t AD7293_GetAlerts(void);
 uint16_t AD7293_GetTemperatureAlerts(void);
 uint16_t AD7293_GetCurrentAlerts(void);
 void AD7293_ResetAlerts(void);
+void AD7293_SetGpio(uint8_t value);
 void AD7293_SetPowerOn(void);
 void AD7293_SetPowerOff(void);
 bool AD7293_Configuration(void);

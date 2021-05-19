@@ -1,7 +1,9 @@
 #include "ad7293.h"
 #include "comm.h"
 #include "control.h"
+#include "delay.h"
 #include "global.h"
+#include "inputs.h"
 #include "spi.h"
 #include "uart.h"
 
@@ -123,29 +125,52 @@ void CONTROL_Task(void *pParameters)
   (void) pParameters;
   uint16_t alerts;
   uint16_t status;
-  float temp;
-  uint16_t counter = 0;
+  //float temp;
+  //uint16_t counter = 0;
   uint8_t i;
 
   CONTROL_ErrCode = ERR_NONE;
 
+  CONTROL_ResetErrCode();
+
   /**< Configure peripherals */
   CONTROL_Configuration();
   SPI_Configuration();
-  AD7293_Configuration();
+  COMM_Send("AD7293: ");
+  if (AD7293_Configuration() == false)
+  {
+    COMM_Send("NOT DETECTED!\n");
+    while (1);
+  }
+  COMM_Send("DETECTED\n");
 
-  CONTROL_ResetErrCode();
-
+  /**< Wait for 100ms before enabling output */
   vTaskDelay(100);
+  /**< Enable PA_ON */
+  AD7293_SetPowerOn();
+
+  /**< Set gate1..4 voltages from EEPROM (bipolar outputs) */
+  for (i = 0; i < 4; i++)
+    AD7293_SetGateVoltage(i, EE_GateVoltage[i]);
+
+  /**< Wait for 1us */
+  DELAY_1USEC;
+  /**< Set gate5..8 voltages from EEPROM (unipolar outputs) */
+  for (i = 4; i < GATES_NUM; i++)
+    AD7293_SetGateVoltage(i, EE_GateVoltage[i]);
+  /**< Set LDAC pin */
+  AD7293_SetGpio(AD7293_LDAC_PIN);
 
   while (1)
   {
     if (CONTROL_ErrCode != ERR_NONE)
       continue;
     alerts = AD7293_GetAlerts();
-    if (alerts & AD7293_ALERTS_MASK)
+    if ((alerts & AD7293_ALERTS_MASK) || (INPUTS_IsActive(INPUT_RESET) == true))
     {
       /**< Something is going wrong, stop working */
+      /**< Reset LDAC pin */
+      AD7293_SetGpio(0);
       /**< Reset bi-polar outputs */
       for (i = 0; i < 4; i++)
         AD7293_SetGateVoltage(i, GATE14_MIN_VALUE);
@@ -226,17 +251,17 @@ void CONTROL_Task(void *pParameters)
       }
       if (CONTROL_ErrCode == ERR_NONE)
       {
-        COMM_Send("Unknown");
+        COMM_Send("External reset");
         CONTROL_ErrCode = ERR_UNKNOWN;
       }
       COMM_Send("\n");
     }
-    temp = AD7293_GetDrainCurrent(0);
-    temp = AD7293_GetSupplyVoltage(0);
-    temp = AD7293_GetTemperature(0);
-    vTaskDelay(100);
-    counter++;
-    if (counter == 100)
-      AD7293_SetGateVoltage(0, -2900);
+//    temp = AD7293_GetDrainCurrent(0);
+//    temp = AD7293_GetSupplyVoltage(0);
+//    temp = AD7293_GetTemperature(0);
+//    vTaskDelay(100);
+//    counter++;
+//    if (counter == 100)
+//      AD7293_SetGateVoltage(0, -2900);
   }
 }

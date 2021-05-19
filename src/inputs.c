@@ -2,7 +2,7 @@
 
 /**< Structure with hardware connections for inputs */
 const TInput INPUTS_Pins[INPUT_LAST] = {
-  {INPUT_KEY1_GPIO, INPUT_KEY1_PIN}
+  {INPUT_RESET_GPIO, INPUT_RESET_PIN, GPIO_PuPd_DOWN}
 };
 
 /** \brief Check if input is active (high)
@@ -34,7 +34,7 @@ void INPUTS_Configuration(void)
 
   for (i = 0; i < INPUT_LAST; i++)
   {
-    GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;
+    GPIO_InitStruct.GPIO_PuPd = INPUTS_Pins[i].PuPd;
     GPIO_InitStruct.GPIO_Pin = INPUTS_Pins[i].GPIO_Pin;
     GPIO_Init(INPUTS_Pins[i].GPIO, &GPIO_InitStruct);
   }

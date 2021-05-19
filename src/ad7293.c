@@ -367,6 +367,17 @@ void AD7293_ResetAlerts(void)
   AD7293_WriteWord(REGISTER_ALERT, REGISTER_ALERT_SUM, 0xFFFF);
 }
 
+/** \brief Set GPIO value (low/high)
+ *
+ * \param [in] value New value
+ * \return void
+ *
+ */
+void AD7293_SetGpio(uint8_t value)
+{
+  AD7293_WriteCommonByte(REGISTER_COMMON_GPIO, value);
+}
+
 /** \brief Switch power on (PA_ON = 1)
  *
  * \return void
@@ -425,13 +436,18 @@ bool AD7293_Configuration(void)
   AD7293_Reset();
   /**< Disable all DACs */
   AD7293_WriteCommonByte(REGISTER_COMMON_DAC_ENABLE, 0x00);
-//  /**< Enable GPIOs */
-//	AD7293_WriteWord(
-//		REGISTER_PAGE_CONFIGURATION,status = AD7293_GetTemperatureAlerts();
-//		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_ENABLE,
-//		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_GPIO3
-//  );
-//  AD7293_WriteCommonByte(REGISTER_COMMON_GPIO, 0xFF);
+  /**< Set pins as GPIOs */
+	AD7293_WriteWord(
+		REGISTER_PAGE_CONFIGURATION,
+    REGISTER_CONFIGURATION_DIGITAL_IO_FUNCTION,
+    REGISTER_CONFIGURATION_DIGITAL_OUTPUT_GPIO7
+  );
+  /**< Enable GPIOs */
+	AD7293_WriteWord(
+		REGISTER_PAGE_CONFIGURATION,
+		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_ENABLE,
+		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_GPIO7
+  );
   /**< Setup Bipolar DAC Offset, 0b10 << 4: -5 V to 0 V */
 	AD7293_WriteByte(
 		REGISTER_PAGE_OFFSET0,
@@ -533,20 +549,9 @@ bool AD7293_Configuration(void)
 		0xFF
 	);
 
-  /**< Setup output voltages for bi-directional outputs */
+  /**< Setup zero voltages for bipolar outputs */
   for (i = 0; i < 4; i++)
-    AD7293_SetGateVoltage(i, EE_GateVoltage[i]);
-
-//  /**< Wait for 1us */
-//  DELAY_1USEC;
-//  /**< Setup output voltages for uni-directional outputs */
-//  for (i = 4; i < GATES_NUM; i++)
-//    AD7293_SetGateVoltage(i, EE_GateVoltage[i]);
-
-  /**< Wait for 100ms before enabling output */
-  vTaskDelay(100);
-  /**< Enable PA_ON */
-  AD7293_SetPowerOn();
+    AD7293_SetGateVoltage(i, GATE14_MIN_VALUE);
 
   return true;
 }
