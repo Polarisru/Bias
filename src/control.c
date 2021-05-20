@@ -125,7 +125,7 @@ void CONTROL_Task(void *pParameters)
   (void) pParameters;
   uint16_t alerts;
   uint16_t status;
-  //float temp;
+  float temp;
   //uint16_t counter = 0;
   uint8_t i;
 
@@ -256,9 +256,9 @@ void CONTROL_Task(void *pParameters)
       }
       COMM_Send("\n");
     }
-//    temp = AD7293_GetDrainCurrent(0);
-//    temp = AD7293_GetSupplyVoltage(0);
-//    temp = AD7293_GetTemperature(0);
+    temp = AD7293_GetDrainCurrent(0);
+    temp = AD7293_GetSupplyVoltage(0);
+    temp = AD7293_GetTemperature(0);
 //    vTaskDelay(100);
 //    counter++;
 //    if (counter == 100)

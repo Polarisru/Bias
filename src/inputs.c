@@ -52,21 +52,21 @@ void INPUTS_Configuration(void)
     GPIO_Init(INPUTS_Pins[i].GPIO, &GPIO_InitStruct);
   }
 
-	/**< Enable SYSCFG clock */
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-	/**< Connect EXTIx Line to DW Int pin */
-	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource2);
-
-	/**< Configure EXTIx line for interrupt */
-	EXTI_InitStructure.EXTI_Line = EXTI_Line2;
-	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
-	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-	EXTI_Init(&EXTI_InitStructure);
-
-	/**< Enable external interrupt for RESET pin */
-	NVIC_InitStructure.NVIC_IRQChannel = EXTI2_3_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPriority = 0x00;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
+//	/**< Enable SYSCFG clock */
+//	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+//	/**< Connect EXTIx Line to DW Int pin */
+//	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource2);
+//
+//	/**< Configure EXTIx line for interrupt */
+//	EXTI_InitStructure.EXTI_Line = EXTI_Line2;
+//	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+//	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
+//	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+//	EXTI_Init(&EXTI_InitStructure);
+//
+//	/**< Enable external interrupt for RESET pin */
+//	NVIC_InitStructure.NVIC_IRQChannel = EXTI2_3_IRQn;
+//	NVIC_InitStructure.NVIC_IRQChannelPriority = 0x00;
+//	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+//	NVIC_Init(&NVIC_InitStructure);
 }
