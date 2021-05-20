@@ -1,4 +1,15 @@
+#include "global.h"
 #include "inputs.h"
+
+void EXTI2_3_IRQHandler(void)
+{
+	if (EXTI_GetITStatus(EXTI_Line2) != RESET)
+  {
+		//mark_interrupt(INTERRUPT_DW1000);
+		/**< Clear the EXTI line 2 pending bit */
+		EXTI_ClearITPendingBit(EXTI_Line2);
+	}
+}
 
 /**< Structure with hardware connections for inputs */
 const TInput INPUTS_Pins[INPUT_LAST] = {
@@ -27,6 +38,8 @@ bool INPUTS_IsActive(uint8_t pin)
 void INPUTS_Configuration(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct;
+  EXTI_InitTypeDef EXTI_InitStructure;
+  NVIC_InitTypeDef NVIC_InitStructure;
   uint8_t i;
 
   GPIO_StructInit(&GPIO_InitStruct);
@@ -38,4 +51,22 @@ void INPUTS_Configuration(void)
     GPIO_InitStruct.GPIO_Pin = INPUTS_Pins[i].GPIO_Pin;
     GPIO_Init(INPUTS_Pins[i].GPIO, &GPIO_InitStruct);
   }
+
+	/**< Enable SYSCFG clock */
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+	/**< Connect EXTIx Line to DW Int pin */
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource2);
+
+	/**< Configure EXTIx line for interrupt */
+	EXTI_InitStructure.EXTI_Line = EXTI_Line2;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
+
+	/**< Enable external interrupt for RESET pin */
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI2_3_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPriority = 0x00;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 }
