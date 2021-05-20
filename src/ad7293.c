@@ -541,7 +541,7 @@ bool AD7293_Configuration(void)
   AD7293_WriteWord(
     REGISTER_LOW_LIMIT_1,
     REGISTER_LOW_LIMIT_1_RS_0,
-    AD7293_ConvertSupplyVoltage(EE_DrainVoltageMax)
+    AD7293_ConvertSupplyVoltage(EE_DrainVoltageMin)
   );
   /**< Enable all DACs */
 	AD7293_WriteCommonByte(
