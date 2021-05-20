@@ -26,7 +26,6 @@ void LED_Task(void *pParameters)
     #else
     OUTPUTS_Toggle(OUTPUT_LED);
     #endif
-    value = ANALOG_GetValue();
     vTaskDelay(1000);
   }
 }

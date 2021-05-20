@@ -1,10 +1,10 @@
 #include "analog.h"
 
-#define ANALOG_9V_PIN       GPIO_Pin_1
+#define ANALOG_9V_PIN       GPIO_Pin_0
 
-#define ANALOG_9V_PORT      GPIOB
+#define ANALOG_9V_PORT      GPIOA
 
-#define ANALOG_9V_CHANNEL   ADC_Channel_9
+#define ANALOG_9V_CHANNEL   ADC_Channel_0
 
 /** \brief Analog module configuration
  *

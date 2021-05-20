@@ -526,7 +526,7 @@ bool AD7293_Configuration(void)
   AD7293_WriteWord(
     REGISTER_HIGH_LIMIT_0,
     REGISTER_HIGH_LIMIT_0_ISENSE0 + i,
-    AD7293_ConvertCurrent(EE_DrainCurrent[i])
+    AD7293_ConvertCurrent((float)EE_DrainCurrent[i] / 1000)
   );
   /**< Set high limit for supply voltage */
   AD7293_WriteWord(

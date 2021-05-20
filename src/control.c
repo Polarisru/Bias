@@ -8,6 +8,7 @@
 #include "uart.h"
 
 static uint8_t CONTROL_ErrCode;
+volatile float temp;
 
 /** \brief Configure control module
  *
@@ -43,9 +44,7 @@ void CONTROL_Task(void *pParameters)
 {
   (void) pParameters;
   uint16_t alerts;
-  uint16_t status;
-  float temp;
-  //uint16_t counter = 0;
+  uint16_t status, status_c;
   uint8_t i;
 
   GLOBAL_Reset = false;
@@ -82,16 +81,22 @@ void CONTROL_Task(void *pParameters)
   /**< Set LDAC pin */
   AD7293_SetGpio(AD7293_LDAC_PIN);
 
+  vTaskDelay(100);
+
   while (1)
   {
     if (CONTROL_ErrCode != ERR_NONE)
+    {
+      vTaskDelay(100);
       continue;
+    }
     temp = AD7293_GetDrainCurrent(0);
     temp = AD7293_GetSupplyVoltage(0);
     temp = AD7293_GetTemperature(0);
     alerts = AD7293_GetAlerts();
     if ((alerts & AD7293_ALERTS_MASK) || ((GLOBAL_Reset == true) && (INPUTS_IsActive(INPUT_RESET) == true)))
     {
+      status_c = AD7293_GetCurrentAlerts();
       /**< Something is going wrong, stop working */
       /**< Reset LDAC pin */
       AD7293_SetGpio(0);
@@ -151,7 +156,7 @@ void CONTROL_Task(void *pParameters)
       } else
       if (alerts & REGISTER_ALERT_SUM_ISENSX_HIGH)
       {
-        status = AD7293_GetCurrentAlerts();
+        status = status_c;
         if (status & REGISTER_ALERT_ISENSX_HIGH_0)
         {
           COMM_Send("Drain1 current high");

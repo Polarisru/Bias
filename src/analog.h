@@ -3,7 +3,7 @@
 
 #include "defines.h"
 
-#define ANALOG_REF          3.3V
+#define ANALOG_REF          3.3f
 #define ANALOG_DIV          6
 #define ANALOG_SUPPLY       9.0f
 #define ANALOG_DEVIATION    0.25f
