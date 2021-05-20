@@ -9,8 +9,6 @@
 
 static uint8_t CONTROL_ErrCode;
 
-//#define ADC1_DR_Address             0x40012440
-
 /** \brief Configure control module
  *
  * \return void
@@ -18,85 +16,6 @@ static uint8_t CONTROL_ErrCode;
  */
 void CONTROL_Configuration(void)
 {
-//  ADC_InitTypeDef ADC_InitStruct;
-//  DMA_InitTypeDef DMA_InitStructure;
-//  TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
-//  GPIO_InitTypeDef GPIO_InitStructure;
-//
-//  GPIO_InitStructure.GPIO_Pin = ST1_PIN;
-//  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
-//  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-//  GPIO_Init(ST1_GPIO, &GPIO_InitStructure);
-//  GPIO_InitStructure.GPIO_Pin = ST2_PIN;
-//  GPIO_Init(ST2_GPIO, &GPIO_InitStructure);
-//  GPIO_InitStructure.GPIO_Pin = ST3_PIN;
-//  GPIO_Init(ST3_GPIO, &GPIO_InitStructure);
-//  GPIO_InitStructure.GPIO_Pin = UIN_PIN;
-//  GPIO_Init(UIN_GPIO, &GPIO_InitStructure);
-//
-//  ADC_DeInit(ADC1);
-//  DMA_DeInit(DMA1_Channel1);
-//  TIM_DeInit(TIM15);
-//
-//  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
-//  RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
-//  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
-//
-//  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC1_DR_Address;    //ADC Adresse
-//  //DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)CONTROL_Values;      //ADC Buffer
-//  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;              //ADC -> DMA -> RAM
-//  DMA_InitStructure.DMA_BufferSize = 4;                    //Buffer Size
-//  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-//  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-//  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;  //ADC Datenword = 16bit
-//  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;      //RAM Datenword = 16bit, beide MÜSSEN gleich sein
-//  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;                //DAM als Ring Buffer (DMA_Mode_Normal)
-//  DMA_InitStructure.DMA_Priority = DMA_Priority_High;              //Hohe Prio
-//  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;                //Memory -> DMA -> Memory = Disabelt
-//  DMA_Init(DMA1_Channel1, &DMA_InitStructure);
-//
-//  /* DMA1 Channel1 enable */
-//  DMA_Cmd(DMA1_Channel1, ENABLE);
-//
-//  ADC_StructInit(&ADC_InitStruct);
-//
-//  ADC_InitStruct.ADC_Resolution = ADC_Resolution_8b;
-//  ADC_InitStruct.ADC_ContinuousConvMode = ENABLE;
-//  ADC_InitStruct.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_Rising;
-//  ADC_InitStruct.ADC_ExternalTrigConv = ADC_ExternalTrigConv_T3_TRGO;
-//  ADC_InitStruct.ADC_DataAlign = ADC_DataAlign_Right;
-//  ADC_InitStruct.ADC_ScanDirection = ADC_ScanDirection_Upward;
-//  ADC_Init(ADC1, &ADC_InitStruct);
-//
-//  ADC_ChannelConfig(ADC1, ADC_Channel_0, ADC_SampleTime_239_5Cycles);
-//  ADC_ChannelConfig(ADC1, ADC_Channel_1, ADC_SampleTime_239_5Cycles);
-//  ADC_ChannelConfig(ADC1, ADC_Channel_8, ADC_SampleTime_239_5Cycles);
-//  ADC_ChannelConfig(ADC1, ADC_Channel_9, ADC_SampleTime_239_5Cycles);
-//
-//  ADC_GetCalibrationFactor(ADC1);
-//
-//  /* ADC DMA request in circular mode */
-//  ADC_DMARequestModeConfig(ADC1, ADC_DMAMode_Circular);
-//  /* Enable ADC_DMA */
-//  ADC_DMACmd(ADC1, ENABLE);
-//
-//  ADC_Cmd(ADC1, ENABLE);
-//
-//  TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-//
-//  /* Time base configuration */
-//  TIM_TimeBaseStructure.TIM_Period = (SystemCoreClock / 1000 ) - 1; //1KHz
-//  TIM_TimeBaseStructure.TIM_Prescaler = 0x0;
-//  TIM_TimeBaseStructure.TIM_ClockDivision = 0x0;
-//  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-//  TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
-//
-//  /* TIM15 enable counter */
-//  TIM_Cmd(TIM3, ENABLE);
-//  /* TIM15 enable Trigger Output */
-//  TIM_SelectOutputTrigger(TIM3, TIM_TRGOSource_Update);
-//
-//  ADC_StartOfConversion(ADC1);
 }
 
 /** \brief Reset error codes
@@ -128,6 +47,8 @@ void CONTROL_Task(void *pParameters)
   float temp;
   //uint16_t counter = 0;
   uint8_t i;
+
+  GLOBAL_Reset = false;
 
   CONTROL_ErrCode = ERR_NONE;
 
@@ -165,8 +86,11 @@ void CONTROL_Task(void *pParameters)
   {
     if (CONTROL_ErrCode != ERR_NONE)
       continue;
+    temp = AD7293_GetDrainCurrent(0);
+    temp = AD7293_GetSupplyVoltage(0);
+    temp = AD7293_GetTemperature(0);
     alerts = AD7293_GetAlerts();
-    if ((alerts & AD7293_ALERTS_MASK) || (INPUTS_IsActive(INPUT_RESET) == true))
+    if ((alerts & AD7293_ALERTS_MASK) || ((GLOBAL_Reset == true) && (INPUTS_IsActive(INPUT_RESET) == true)))
     {
       /**< Something is going wrong, stop working */
       /**< Reset LDAC pin */
@@ -256,12 +180,5 @@ void CONTROL_Task(void *pParameters)
       }
       COMM_Send("\n");
     }
-    temp = AD7293_GetDrainCurrent(0);
-    temp = AD7293_GetSupplyVoltage(0);
-    temp = AD7293_GetTemperature(0);
-//    vTaskDelay(100);
-//    counter++;
-//    if (counter == 100)
-//      AD7293_SetGateVoltage(0, -2900);
   }
 }

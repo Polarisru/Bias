@@ -436,18 +436,18 @@ bool AD7293_Configuration(void)
   AD7293_Reset();
   /**< Disable all DACs */
   AD7293_WriteCommonByte(REGISTER_COMMON_DAC_ENABLE, 0x00);
-//  /**< Set pins as GPIOs */
-//	AD7293_WriteWord(
-//		REGISTER_PAGE_CONFIGURATION,
-//    REGISTER_CONFIGURATION_DIGITAL_IO_FUNCTION,
-//    REGISTER_CONFIGURATION_DIGITAL_OUTPUT_GPIO7
-//  );
-//  /**< Enable GPIOs */
-//	AD7293_WriteWord(
-//		REGISTER_PAGE_CONFIGURATION,
-//		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_ENABLE,
-//		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_GPIO7
-//  );
+  /**< Set pins as GPIOs */
+	AD7293_WriteWord(
+		REGISTER_PAGE_CONFIGURATION,
+    REGISTER_CONFIGURATION_DIGITAL_IO_FUNCTION,
+    REGISTER_CONFIGURATION_DIGITAL_OUTPUT_GPIO7 | DIGITAL_OUTPUT_DEFAULT
+  );
+  /**< Enable GPIOs */
+	AD7293_WriteWord(
+		REGISTER_PAGE_CONFIGURATION,
+		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_ENABLE,
+		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_GPIO7
+  );
   /**< Setup Bipolar DAC Offset, 0b10 << 4: -5 V to 0 V */
 	AD7293_WriteByte(
 		REGISTER_PAGE_OFFSET0,
@@ -515,17 +515,18 @@ bool AD7293_Configuration(void)
   );
   /**< Set limits for all important parameters */
   /**< Set high limit for temperature */
-  AD7293_WriteWord(
-    REGISTER_HIGH_LIMIT_0,
-    REGISTER_HIGH_LIMIT_0_TSENSEINT,
-    AD7293_ConvertTemperature((float)EE_TemperatureMax)
-  );
+  for (i = 0; i < AD7293_TEMPERATURE_LAST; i++)
+    AD7293_WriteWord(
+      REGISTER_HIGH_LIMIT_0,
+      REGISTER_HIGH_LIMIT_0_TSENSEINT + i,
+      AD7293_ConvertTemperature((float)EE_TemperatureMax)
+    );
   /**< Set high limit for current */
   for (i = 0; i < DRAINS_NUM; i++)
   AD7293_WriteWord(
     REGISTER_HIGH_LIMIT_0,
     REGISTER_HIGH_LIMIT_0_ISENSE0 + i,
-    AD7293_ConvertCurrent(0.1f)
+    AD7293_ConvertCurrent(EE_DrainCurrent[i])
   );
   /**< Set high limit for supply voltage */
   AD7293_WriteWord(
@@ -534,11 +535,12 @@ bool AD7293_Configuration(void)
     AD7293_ConvertSupplyVoltage(EE_DrainVoltageMax)
   );
   /**< Set low limit for temperature */
-  AD7293_WriteWord(
-    REGISTER_LOW_LIMIT_0,
-    REGISTER_LOW_LIMIT_0_TSENSEINT,
-    AD7293_ConvertTemperature((float)EE_TemperatureMin)
-  );
+  for (i = 0; i < AD7293_TEMPERATURE_LAST; i++)
+    AD7293_WriteWord(
+      REGISTER_LOW_LIMIT_0,
+      REGISTER_LOW_LIMIT_0_TSENSEINT,
+      AD7293_ConvertTemperature((float)EE_TemperatureMin)
+    );
   /**< Set low limit for supply voltage */
   AD7293_WriteWord(
     REGISTER_LOW_LIMIT_1,

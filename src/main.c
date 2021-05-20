@@ -8,6 +8,8 @@
 #include "outputs.h"
 #include "eeprom.h"
 
+volatile uint8_t value;
+
 /**< LED blinking task */
 void LED_Task(void *pParameters)
 {
@@ -16,13 +18,15 @@ void LED_Task(void *pParameters)
   while (1)
   {
     #ifdef DEF_REMOTE
-    if (ANALOG_GetValue() > 0x40)
-      OUTPUTS_Switch(OUTPUT_LED, false);
-    else
+    value = ANALOG_GetValue();
+    if ((value > ANALOG_MAX) || (value < ANALOG_MIN))
       OUTPUTS_Switch(OUTPUT_LED, true);
+    else
+      OUTPUTS_Switch(OUTPUT_LED, false);
     #else
     OUTPUTS_Toggle(OUTPUT_LED);
     #endif
+    value = ANALOG_GetValue();
     vTaskDelay(1000);
   }
 }
@@ -32,8 +36,8 @@ int main(void)
 {
   GPIO_Configuration();
   OUTPUTS_Configuration();
-  //INPUTS_Configuration();
-  //ANALOG_Configuration();
+  INPUTS_Configuration();
+  ANALOG_Configuration();
   EEPROM_Configuration();
 
   /**< Create RTOS tasks */

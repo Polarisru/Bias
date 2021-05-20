@@ -1,5 +1,11 @@
 #include "analog.h"
 
+#define ANALOG_9V_PIN       GPIO_Pin_1
+
+#define ANALOG_9V_PORT      GPIOB
+
+#define ANALOG_9V_CHANNEL   ADC_Channel_9
+
 /** \brief Analog module configuration
  *
  * \return void
@@ -29,7 +35,7 @@ void ANALOG_Configuration(void)
   ADC_InitStruct.ADC_ScanDirection = ADC_ScanDirection_Upward;
   ADC_Init(ADC1, &ADC_InitStruct);
 
-  ADC_ChannelConfig(ADC1, ADC_Channel_0, ADC_SampleTime_239_5Cycles);
+  ADC_ChannelConfig(ADC1, ANALOG_9V_CHANNEL, ADC_SampleTime_239_5Cycles);
 
   ADC_GetCalibrationFactor(ADC1);
 
