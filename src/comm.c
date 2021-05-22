@@ -196,7 +196,7 @@ void COMM_Task(void *pParameters)
     if (0 == strncmp(cmd, commSV, strlen(commSV)))
     {
       /**< It is a SV command */
-      if (sscanf(&cmd[strlen(commSV)], "%c%lu..%lu", &ival32, &uval32) < 1)
+      if (sscanf(&cmd[strlen(commSV)], "%c%lu..%lu", &ch, &ival32, &uval32) < 1)
       {
         strcpy(buff, commErrPrm);
       } else
