@@ -19,7 +19,7 @@ void INPUT_RESET_IRQ_HANDLER(void)
 
 /**< Structure with hardware connections for inputs */
 const TInput INPUTS_Pins[INPUT_LAST] = {
-  {INPUT_RESET_GPIO, INPUT_RESET_PIN, GPIO_PuPd_DOWN}
+  {INPUT_RESET_GPIO, INPUT_RESET_PIN, GPIO_PuPd_UP}
 };
 
 /** \brief Check if input is active (high)
@@ -66,7 +66,7 @@ void INPUTS_Configuration(void)
 	/**< Configure EXTIx line for interrupt */
 	EXTI_InitStructure.EXTI_Line = INPUT_RESET_EXTI_LINE;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 	EXTI_Init(&EXTI_InitStructure);
 

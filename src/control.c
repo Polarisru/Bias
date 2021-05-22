@@ -65,6 +65,8 @@ void CONTROL_Task(void *pParameters)
   }
   COMM_Send("DETECTED\n");
 
+  //OUTPUTS_Switch(OUTPUT_TEST, true);
+
   /**< Wait for 100ms before enabling output */
   vTaskDelay(100);
   /**< Enable PA_ON */
@@ -98,6 +100,7 @@ void CONTROL_Task(void *pParameters)
     alerts = AD7293_GetAlerts();
     if ((alerts & AD7293_ALERTS_MASK) || ((GLOBAL_Reset == true) && (INPUTS_IsActive(INPUT_RESET) == true)))
     {
+      //OUTPUTS_Switch(OUTPUT_TEST, false);
       status_c = AD7293_GetCurrentAlerts();
       /**< Something is going wrong, stop working */
       /**< Reset LDAC pin */

@@ -8,9 +8,9 @@ enum {
   INPUT_LAST
 };
 
-#define INPUT_RESET_PIN     GPIO_Pin_15
+#define INPUT_RESET_PIN     GPIO_Pin_2
 
-#define INPUT_RESET_GPIO    GPIOC
+#define INPUT_RESET_GPIO    GPIOA
 
 typedef struct
 {
