@@ -17,8 +17,10 @@ void DELAY_Coniguration(void)
 
 void DELAY_Usec(uint16_t usec)
 {
+  if (usec == 0)
+    return;
   DELAY_TIMER->CNT = 0;
-  DELAY_TIMER->ARR = (uint16_t)(usec * SystemCoreClock / 1000000UL);
+  DELAY_TIMER->ARR = (uint16_t)((usec - 1) * SystemCoreClock / 1000000UL);
   DELAY_TIMER->SR = (uint16_t)~TIM_FLAG_Update;
   DELAY_TIMER->CR1 |= TIM_CR1_CEN;
   while (!(DELAY_TIMER->SR & TIM_FLAG_Update));

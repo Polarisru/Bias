@@ -56,6 +56,7 @@ void CONTROL_Task(void *pParameters)
   /**< Configure peripherals */
   CONTROL_Configuration();
   SPI_Configuration();
+
   COMM_Send("AD7293: ");
   if (AD7293_Configuration() == false)
   {
@@ -90,9 +91,10 @@ void CONTROL_Task(void *pParameters)
       vTaskDelay(100);
       continue;
     }
-    temp = AD7293_GetDrainCurrent(0);
-    temp = AD7293_GetSupplyVoltage(0);
-    temp = AD7293_GetTemperature(0);
+    DELAY_Usec(30);
+//    temp = AD7293_GetDrainCurrent(0);
+//    temp = AD7293_GetSupplyVoltage(0);
+//    temp = AD7293_GetTemperature(0);
     alerts = AD7293_GetAlerts();
     if ((alerts & AD7293_ALERTS_MASK) || ((GLOBAL_Reset == true) && (INPUTS_IsActive(INPUT_RESET) == true)))
     {

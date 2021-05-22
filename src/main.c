@@ -1,4 +1,5 @@
 #include "defines.h"
+#include "delay.h"
 #include "analog.h"
 #include "comm.h"
 #include "control.h"
@@ -34,6 +35,7 @@ void LED_Task(void *pParameters)
 int main(void)
 {
   GPIO_Configuration();
+  DELAY_Coniguration();
   OUTPUTS_Configuration();
   INPUTS_Configuration();
   ANALOG_Configuration();

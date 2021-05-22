@@ -3,17 +3,25 @@
 
 #include "defines.h"
 
-#define SPI_AD7293_CS_PIN     GPIO_Pin_4
+#ifndef DEF_REMOTE
+  #define SPI_AD7293_CS_PIN     GPIO_Pin_7
+#else
+  #define SPI_AD7293_CS_PIN     GPIO_Pin_4
+#endif
 #define SPI_MOSI_PIN          GPIO_Pin_7
 #define SPI_MISO_PIN          GPIO_Pin_6
 #define SPI_SCLK_PIN          GPIO_Pin_5
 
-#define SPI_AD7293_CS_GPIO    GPIOA
+#ifndef DEF_REMOTE
+  #define SPI_AD7293_CS_GPIO    GPIOF
+#else
+  #define SPI_AD7293_CS_GPIO    GPIOA
+#endif
 #define SPI_MOSI_GPIO         GPIOA
 #define SPI_MISO_GPIO         GPIOA
 #define SPI_SCLK_GPIO         GPIOA
 
-#define SPI_DELAY       {__NOP(); __NOP(); __NOP(); __NOP(); __NOP(); __NOP(); __NOP(); __NOP();}
+#define SPI_DELAY       {__NOP(); __NOP(); __NOP(); __NOP();}
 
 enum
 {

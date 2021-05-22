@@ -507,11 +507,11 @@ bool AD7293_Configuration(void)
 		REGISTER_CONFIGURATION_CLOSE_LOOP_CONTROL,
 		0x0000
 	);
-	/**< Enable voltage monitoring in the background */
+	/**< Enable supply voltage (RS0+) monitoring in the background */
 	AD7293_WriteWord(
 		REGISTER_PAGE_CONFIGURATION,
 		REGISTER_CONFIGURATION_MON_ENABLE,
-		0xFFFF
+		REGISTER_CONFIGURATION_MON_ENABLE_RS0
   );
   /**< Set limits for all important parameters */
   /**< Set high limit for temperature */
