@@ -11,6 +11,7 @@ const char commID[]   = "ID";
 const char commGV[]   = "GV";
 const char commDC[]   = "DC";
 const char commT[]    = "T";
+const char commSV[]   = "SV";
 const char commE[]    = "E?";
 const char commPON[]  = "PON";
 const char commPOFF[] = "POFF";
@@ -186,6 +187,34 @@ void COMM_Task(void *pParameters)
             /**< It's a T= command */
             EE_TemperatureMin = (int8_t)ival32;
             EE_TemperatureMax = (int8_t)uval32;
+            EEPROM_SaveAllVariables();
+            strcpy(buff, commErrOk);
+          }
+        }
+      }
+    } else
+    if (0 == strncmp(cmd, commSV, strlen(commSV)))
+    {
+      /**< It is a SV command */
+      if (sscanf(&cmd[strlen(commSV)], "%lu..%lu", &ival32, &uval32) < 1)
+      {
+        strcpy(buff, commErrPrm);
+      } else
+      {
+        if ((ch != '?') && (ch != '='))
+        {
+          strcpy(buff, commErrPrm);
+        } else
+        {
+          if (ch == '?')
+          {
+            /**< It is a SV? command */
+            sprintf(buff, "%d..%d", EE_DrainVoltageMin / 10, EE_DrainVoltageMax / 10);
+          } else
+          {
+            /**< It's a SV= command */
+            EE_DrainVoltageMin = (uint16_t)ival32 * 10;
+            EE_DrainVoltageMax = (uint16_t)uval32 * 10;
             EEPROM_SaveAllVariables();
             strcpy(buff, commErrOk);
           }
