@@ -4,8 +4,8 @@
 #include "delay.h"
 #include "global.h"
 #include "inputs.h"
+#include "outputs.h"
 #include "spi.h"
-#include "uart.h"
 
 static uint8_t CONTROL_ErrCode;
 volatile float temp;
@@ -65,26 +65,27 @@ void CONTROL_Task(void *pParameters)
   }
   COMM_Send("DETECTED\n");
 
-  //OUTPUTS_Switch(OUTPUT_TEST, true);
-
-  /**< Wait for 100ms before enabling output */
-  vTaskDelay(100);
+  /**< Wait for 1ms before enabling output */
+  vTaskDelay(1);
   /**< Enable PA_ON */
   AD7293_SetPowerOn();
 
+  /**< Wait for 5ms */
+  vTaskDelay(5);
   /**< Set gate1..4 voltages from EEPROM (bipolar outputs) */
   for (i = 0; i < 4; i++)
     AD7293_SetGateVoltage(i, EE_GateVoltage[i]);
 
-  /**< Wait for 1us */
-  DELAY_1USEC;
+  /**< Wait for 2us */
+  DELAY_Usec(2);
   /**< Set gate5..8 voltages from EEPROM (unipolar outputs) */
   for (i = 4; i < GATES_NUM; i++)
     AD7293_SetGateVoltage(i, EE_GateVoltage[i]);
   /**< Set LDAC pin */
-  AD7293_SetGpio(AD7293_LDAC_PIN);
+  //AD7293_SetGpio(AD7293_LDAC_PIN);
+  OUTPUTS_Switch(OUTPUT_TEST, true);
 
-  vTaskDelay(100);
+  vTaskDelay(20);
 
   while (1)
   {
@@ -100,11 +101,11 @@ void CONTROL_Task(void *pParameters)
     alerts = AD7293_GetAlerts();
     if ((alerts & AD7293_ALERTS_MASK) || ((GLOBAL_Reset == true) && (INPUTS_IsActive(INPUT_RESET) == true)))
     {
-      //OUTPUTS_Switch(OUTPUT_TEST, false);
       status_c = AD7293_GetCurrentAlerts();
       /**< Something is going wrong, stop working */
       /**< Reset LDAC pin */
-      AD7293_SetGpio(0);
+      //AD7293_SetGpio(0);
+      OUTPUTS_Switch(OUTPUT_TEST, false);
       /**< Reset bi-polar outputs */
       for (i = 0; i < 4; i++)
         AD7293_SetGateVoltage(i, GATE14_MIN_VALUE);

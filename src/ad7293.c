@@ -414,7 +414,7 @@ void AD7293_SetPowerOff(void)
 void AD7293_Reset(void)
 {
 	AD7293_WriteCommonWord(REGISTER_COMMON_SOFTWARE_RESET, 0x7293);
-	vTaskDelay(10);
+	vTaskDelay(1);
 	AD7293_WriteCommonWord(REGISTER_COMMON_SOFTWARE_RESET, 0x0000);
 }
 
@@ -436,18 +436,18 @@ bool AD7293_Configuration(void)
   AD7293_Reset();
   /**< Disable all DACs */
   AD7293_WriteCommonByte(REGISTER_COMMON_DAC_ENABLE, 0x00);
-  /**< Set pins as GPIOs */
-	AD7293_WriteWord(
-		REGISTER_PAGE_CONFIGURATION,
-    REGISTER_CONFIGURATION_DIGITAL_IO_FUNCTION,
-    REGISTER_CONFIGURATION_DIGITAL_OUTPUT_GPIO7 | DIGITAL_OUTPUT_DEFAULT
-  );
-  /**< Enable GPIOs */
-	AD7293_WriteWord(
-		REGISTER_PAGE_CONFIGURATION,
-		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_ENABLE,
-		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_GPIO7
-  );
+//  /**< Set pins as GPIOs */
+//	AD7293_WriteWord(
+//		REGISTER_PAGE_CONFIGURATION,
+//    REGISTER_CONFIGURATION_DIGITAL_IO_FUNCTION,
+//    REGISTER_CONFIGURATION_DIGITAL_OUTPUT_GPIO7 | DIGITAL_OUTPUT_DEFAULT
+//  );
+//  /**< Enable GPIOs */
+//	AD7293_WriteWord(
+//		REGISTER_PAGE_CONFIGURATION,
+//		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_ENABLE,
+//		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_GPIO7
+//  );
   /**< Setup Bipolar DAC Offset, 0b10 << 4: -5 V to 0 V */
 	AD7293_WriteByte(
 		REGISTER_PAGE_OFFSET0,
@@ -548,10 +548,7 @@ bool AD7293_Configuration(void)
     AD7293_ConvertSupplyVoltage(EE_DrainVoltageMin)
   );
   /**< Enable all DACs */
-	AD7293_WriteCommonByte(
-		REGISTER_COMMON_DAC_ENABLE,
-		0xFF
-	);
+	AD7293_WriteCommonByte(REGISTER_COMMON_DAC_ENABLE, 0xFF);
 
   /**< Setup zero voltages for bipolar outputs */
   for (i = 0; i < 4; i++)

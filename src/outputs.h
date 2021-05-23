@@ -23,7 +23,7 @@ typedef struct
   #define OUTPUT_LED_GPIO    GPIOB
 #endif
 
-#define OUTPUT_TEST_PIN    GPIO_Pin_3
+#define OUTPUT_TEST_PIN    GPIO_Pin_1
 #define OUTPUT_TEST_GPIO   GPIOA
 
 void OUTPUTS_Switch(uint8_t pin, bool on);

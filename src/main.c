@@ -18,6 +18,7 @@ void LED_Task(void *pParameters)
 
   while (1)
   {
+    vTaskDelay(1000);
     #ifdef DEF_REMOTE
     value = ANALOG_GetValue();
     if ((value > ANALOG_MAX) || (value < ANALOG_MIN))
@@ -27,7 +28,6 @@ void LED_Task(void *pParameters)
     #else
     OUTPUTS_Toggle(OUTPUT_LED);
     #endif
-    vTaskDelay(1000);
   }
 }
 
