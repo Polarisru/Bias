@@ -81,6 +81,9 @@ void CONTROL_Task(void *pParameters)
   /**< Set gate5..8 voltages from EEPROM (unipolar outputs) */
   for (i = 4; i < GATES_NUM; i++)
     AD7293_SetGateVoltage(i, EE_GateVoltage[i]);
+
+  /**< Wait for 5ms */
+  vTaskDelay(5);
   /**< Set LDAC pin */
   //AD7293_SetGpio(AD7293_LDAC_PIN);
   OUTPUTS_Switch(OUTPUT_TEST, true);
@@ -101,11 +104,18 @@ void CONTROL_Task(void *pParameters)
     alerts = AD7293_GetAlerts();
     if ((alerts & AD7293_ALERTS_MASK) || ((GLOBAL_Reset == true) && (INPUTS_IsActive(INPUT_RESET) == true)))
     {
-      status_c = AD7293_GetCurrentAlerts();
       /**< Something is going wrong, stop working */
+      if (alerts & REGISTER_ALERT_SUM_ISENSX_HIGH)
+      {
+        /**< Short-circuit */
+        status_c = AD7293_GetCurrentAlerts();
+        AD7293_SetPowerOff();
+      }
       /**< Reset LDAC pin */
       //AD7293_SetGpio(0);
       OUTPUTS_Switch(OUTPUT_TEST, false);
+      /**< Wait for 3ms */
+      vTaskDelay(3);
       /**< Reset bi-polar outputs */
       for (i = 0; i < 4; i++)
         AD7293_SetGateVoltage(i, GATE14_MIN_VALUE);
