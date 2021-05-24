@@ -21,6 +21,8 @@
 #define SPI_MISO_GPIO         GPIOA
 #define SPI_SCLK_GPIO         GPIOA
 
+#define SPI_GPIO              GPIOA
+
 #define SPI_DELAY       {__NOP(); __NOP(); __NOP(); __NOP();}
 
 enum
