@@ -98,9 +98,11 @@ void AD7293_WriteCommonByte(uint8_t reg, uint8_t data)
 
 	tx [0] = AD7293_OP_WRITE | reg;
 	tx [1] = data;
-	SPI_Select(SPI_SELECT_AD7293);
+	//SPI_Select(SPI_SELECT_AD7293);
+	SPI_SELECT;
 	SPI_Transmit(tx, 2);
-	SPI_Select(SPI_SELECT_NONE);
+	//SPI_Select(SPI_SELECT_NONE);
+	SPI_UNSELECT;
 }
 
 /** \brief Write word to a common register
@@ -117,9 +119,11 @@ void AD7293_WriteCommonWord(uint8_t reg, uint16_t data)
 	tx [0] = AD7293_OP_WRITE | reg;
 	tx [1] = (uint8_t)(data >> 8);
 	tx [2] = (uint8_t)data;
-	SPI_Select(SPI_SELECT_AD7293);
+	//SPI_Select(SPI_SELECT_AD7293);
+	SPI_SELECT;
 	SPI_Transmit(tx, 3);
-	SPI_Select(SPI_SELECT_NONE);
+	//SPI_Select(SPI_SELECT_NONE);
+	SPI_UNSELECT;
 }
 
 /** \brief Write byte to any register
@@ -136,15 +140,19 @@ void AD7293_WriteByte(uint8_t page, uint8_t reg, uint8_t data)
 
 	tx[0] = AD7293_OP_WRITE | REGISTER_COMMON_PAGE_SELECT_POINTER;
 	tx[1] = page;
-	SPI_Select(SPI_SELECT_AD7293);
+	//SPI_Select(SPI_SELECT_AD7293);
+	SPI_SELECT;
 	SPI_Transmit(tx, 2);
-	SPI_Select(SPI_SELECT_NONE);
+	//SPI_Select(SPI_SELECT_NONE);
+	SPI_UNSELECT;
 
 	tx[0] = AD7293_OP_WRITE | reg;
 	tx[1] = data;
-	SPI_Select(SPI_SELECT_AD7293);
+	//SPI_Select(SPI_SELECT_AD7293);
+	SPI_SELECT;
 	SPI_Transmit(tx, 2);
-	SPI_Select(SPI_SELECT_NONE);
+	//SPI_Select(SPI_SELECT_NONE);
+	SPI_UNSELECT;
 }
 
 /** \brief Write word to any register
@@ -161,16 +169,20 @@ void AD7293_WriteWord(uint8_t page, uint8_t reg, uint16_t data)
 
 	tx[0] = AD7293_OP_WRITE | REGISTER_COMMON_PAGE_SELECT_POINTER;
 	tx[1] = page;
-	SPI_Select(SPI_SELECT_AD7293);
+	//SPI_Select(SPI_SELECT_AD7293);
+	SPI_SELECT;
 	SPI_Transmit(tx, 2);
-	SPI_Select(SPI_SELECT_NONE);
+	//SPI_Select(SPI_SELECT_NONE);
+	SPI_UNSELECT;
 
 	tx[0] = AD7293_OP_WRITE | reg;
 	tx[1] = (uint8_t)(data >> 8);
 	tx[2] = (uint8_t)data;
-	SPI_Select(SPI_SELECT_AD7293);
+	//SPI_Select(SPI_SELECT_AD7293);
+	SPI_SELECT;
 	SPI_Transmit(tx, 3);
-	SPI_Select(SPI_SELECT_NONE);
+	//SPI_Select(SPI_SELECT_NONE);
+	SPI_UNSELECT;
 }
 
 /** \brief Read byte from any register
@@ -192,10 +204,12 @@ uint8_t AD7293_ReadByte(uint8_t page, uint8_t reg)
 	SPI_Select(SPI_SELECT_NONE);
 
 	tx [0] = AD7293_OP_READ | reg;
-	SPI_Select(SPI_SELECT_AD7293);
+	//SPI_Select(SPI_SELECT_AD7293);
+	SPI_SELECT;
 	SPI_Transmit(tx, 1);
 	SPI_Receive(rx, 1);
-	SPI_Select(SPI_SELECT_NONE);
+	//SPI_Select(SPI_SELECT_NONE);
+	SPI_UNSELECT;
 
 	return rx[0];
 }
@@ -214,15 +228,19 @@ uint16_t AD7293_ReadWord(uint8_t page, uint8_t reg)
 
 	tx [0] = AD7293_OP_WRITE | REGISTER_COMMON_PAGE_SELECT_POINTER;
 	tx [1] = page;
-	SPI_Select(SPI_SELECT_AD7293);
+	//SPI_Select(SPI_SELECT_AD7293);
+	SPI_SELECT;
 	SPI_Transmit(tx, 2);
-  SPI_Select(SPI_SELECT_NONE);
+  //SPI_Select(SPI_SELECT_NONE);
+  SPI_UNSELECT;
 
 	tx [0] = AD7293_OP_READ | reg;
-	SPI_Select(SPI_SELECT_AD7293);
+	//SPI_Select(SPI_SELECT_AD7293);
+	SPI_SELECT;
 	SPI_Transmit(tx, 1);
 	SPI_Receive(rx, 2);
-	SPI_Select(SPI_SELECT_NONE);
+	//SPI_Select(SPI_SELECT_NONE);
+	SPI_UNSELECT;
 
 	return (((uint16_t)rx[0] << 8) | rx[1]);
 }
@@ -238,10 +256,12 @@ uint16_t AD7293_ReadID(void)
 	uint8_t tx[4] = {0xFF, 0x00, 0x00, 0x00};
 
 	tx[0] = AD7293_OP_READ | REGISTER_COMMON_DEVICE_ID;
-	SPI_Select(SPI_SELECT_AD7293);
+	//SPI_Select(SPI_SELECT_AD7293);
+	SPI_SELECT;
 	SPI_Transmit(tx, 1);
 	SPI_Receive(rx, 2);
-  SPI_Select(SPI_SELECT_NONE);
+  //SPI_Select(SPI_SELECT_NONE);
+  SPI_UNSELECT;
 
 	return (((uint16_t)rx[0] << 8) | rx[1]);
 }
@@ -436,18 +456,19 @@ bool AD7293_Configuration(void)
   AD7293_Reset();
   /**< Disable all DACs */
   AD7293_WriteCommonByte(REGISTER_COMMON_DAC_ENABLE, 0x00);
-//  /**< Set pins as GPIOs */
-//	AD7293_WriteWord(
-//		REGISTER_PAGE_CONFIGURATION,
-//    REGISTER_CONFIGURATION_DIGITAL_IO_FUNCTION,
-//    REGISTER_CONFIGURATION_DIGITAL_OUTPUT_GPIO7 | DIGITAL_OUTPUT_DEFAULT
-//  );
-//  /**< Enable GPIOs */
-//	AD7293_WriteWord(
-//		REGISTER_PAGE_CONFIGURATION,
-//		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_ENABLE,
-//		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_GPIO7
-//  );
+  /**< Set pins as GPIOs */
+	AD7293_WriteWord(
+		REGISTER_PAGE_CONFIGURATION,
+    REGISTER_CONFIGURATION_DIGITAL_IO_FUNCTION,
+    0x0000
+  );
+  /**< Enable outputs GPIOs: ALERT0, ALERT1 */
+	AD7293_WriteWord(
+		REGISTER_PAGE_CONFIGURATION,
+		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_ENABLE,
+		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_GPIO4 |
+		REGISTER_CONFIGURATION_DIGITAL_OUTPUT_GPIO3
+  );
   /**< Setup Bipolar DAC Offset, 0b10 << 4: -5 V to 0 V */
 	AD7293_WriteByte(
 		REGISTER_PAGE_OFFSET0,

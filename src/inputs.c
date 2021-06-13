@@ -1,6 +1,14 @@
 #include "global.h"
 #include "inputs.h"
 
+#ifdef DEF_NEW
+#define INPUT_ALERT_EXTI_GPIO     EXTI_PortSourceGPIOA
+#define INPUT_ALERT_EXTI_SOURCE   EXTI_PinSource1
+#define INPUT_ALERT_EXTI_LINE     EXTI_Line1
+#define INPUT_ALERT_IRQN          EXTI0_1_IRQn
+#define INPUT_ALERT_IRQ_HANDLER   EXTI0_1_IRQHandler
+#endif
+
 #define INPUT_RESET_EXTI_GPIO     EXTI_PortSourceGPIOA
 #define INPUT_RESET_EXTI_SOURCE   EXTI_PinSource2
 #define INPUT_RESET_EXTI_LINE     EXTI_Line2
@@ -11,14 +19,30 @@ void INPUT_RESET_IRQ_HANDLER(void)
 {
 	if (EXTI_GetITStatus(INPUT_RESET_EXTI_LINE) != RESET)
   {
-		GLOBAL_Reset = true;
+		//GLOBAL_Reset = true;
+		GLOBAL_Reset |= (1 << INT_RESET);
 		/**< Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(INPUT_RESET_EXTI_LINE);
 	}
 }
 
+#ifdef DEF_NEW
+void INPUT_ALERT_IRQ_HANDLER(void)
+{
+	if (EXTI_GetITStatus(INPUT_ALERT_EXTI_LINE) != RESET)
+  {
+		GLOBAL_Reset |= (1 << INT_ALERT);
+		/**< Clear the EXTI line pending bit */
+		EXTI_ClearITPendingBit(INPUT_ALERT_EXTI_LINE);
+	}
+}
+#endif
+
 /**< Structure with hardware connections for inputs */
 const TInput INPUTS_Pins[INPUT_LAST] = {
+  #ifdef DEF_NEW
+  {INPUT_ALERT_GPIO, INPUT_ALERT_PIN, GPIO_PuPd_UP},
+  #endif
   {INPUT_RESET_GPIO, INPUT_RESET_PIN, GPIO_PuPd_UP}
 };
 
@@ -63,7 +87,7 @@ void INPUTS_Configuration(void)
 	/**< Connect EXTIx Line to DW Int pin */
 	SYSCFG_EXTILineConfig(INPUT_RESET_EXTI_GPIO, INPUT_RESET_EXTI_SOURCE);
 
-	/**< Configure EXTIx line for interrupt */
+	/**< Configure EXTIx line for Ext.Reset interrupt */
 	EXTI_InitStructure.EXTI_Line = INPUT_RESET_EXTI_LINE;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
@@ -75,4 +99,21 @@ void INPUTS_Configuration(void)
 	NVIC_InitStructure.NVIC_IRQChannelPriority = 0x00;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
+
+  #ifdef DEF_NEW
+	/**< Connect EXTIx Line to DW Int pin */
+	SYSCFG_EXTILineConfig(INPUT_ALERT_EXTI_GPIO, INPUT_ALERT_EXTI_SOURCE);
+
+  /**< Configure EXTIx line for ALERT interrupt */
+	EXTI_InitStructure.EXTI_Line = INPUT_ALERT_EXTI_LINE;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
+
+  NVIC_InitStructure.NVIC_IRQChannel = INPUT_ALERT_IRQN;
+	NVIC_InitStructure.NVIC_IRQChannelPriority = 0x00;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+	#endif
 }

@@ -29,6 +29,11 @@
 #define GATE58_MAX_VALUE    5000
 
 enum {
+  INT_RESET,
+  INT_ALERT
+};
+
+enum {
   ERR_NONE,
   ERR_SUPPLY_LOW,
   ERR_SUPPLY_HIGH,

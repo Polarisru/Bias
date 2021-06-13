@@ -5,12 +5,15 @@
 
 #ifndef DEF_REMOTE
   #define SPI_AD7293_CS_PIN     GPIO_Pin_7
+  #define SPI_MOSI_PIN          GPIO_Pin_7
+  #define SPI_MISO_PIN          GPIO_Pin_6
+  #define SPI_SCLK_PIN          GPIO_Pin_5
 #else
   #define SPI_AD7293_CS_PIN     GPIO_Pin_4
+  #define SPI_MOSI_PIN          GPIO_Pin_7
+  #define SPI_MISO_PIN          GPIO_Pin_6
+  #define SPI_SCLK_PIN          GPIO_Pin_5
 #endif
-#define SPI_MOSI_PIN          GPIO_Pin_7
-#define SPI_MISO_PIN          GPIO_Pin_6
-#define SPI_SCLK_PIN          GPIO_Pin_5
 
 #ifndef DEF_REMOTE
   #define SPI_AD7293_CS_GPIO    GPIOF
@@ -24,6 +27,9 @@
 #define SPI_GPIO              GPIOA
 
 #define SPI_DELAY       {__NOP(); __NOP(); __NOP(); __NOP();}
+
+#define SPI_SELECT      SPI_AD7293_CS_GPIO->BRR = SPI_AD7293_CS_PIN
+#define SPI_UNSELECT    SPI_AD7293_CS_GPIO->BSRR = SPI_AD7293_CS_PIN
 
 enum
 {

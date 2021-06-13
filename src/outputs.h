@@ -5,7 +5,7 @@
 
 enum {
   OUTPUT_LED,
-  OUTPUT_TEST,
+  OUTPUT_SWITCH,
   OUTPUT_LAST
 };
 
@@ -23,8 +23,8 @@ typedef struct
   #define OUTPUT_LED_GPIO    GPIOB
 #endif
 
-#define OUTPUT_TEST_PIN    GPIO_Pin_1
-#define OUTPUT_TEST_GPIO   GPIOA
+#define OUTPUT_SWITCH_PIN    GPIO_Pin_1
+#define OUTPUT_SWITCH_GPIO   GPIOB
 
 void OUTPUTS_Switch(uint8_t pin, bool on);
 void OUTPUTS_Toggle(uint8_t pin);

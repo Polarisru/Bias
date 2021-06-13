@@ -4,12 +4,17 @@
 #include "defines.h"
 
 enum {
+  #ifdef DEF_NEW
+  INPUT_ALERT,
+  #endif
   INPUT_RESET,
   INPUT_LAST
 };
 
+#define INPUT_ALERT_PIN     GPIO_Pin_1
 #define INPUT_RESET_PIN     GPIO_Pin_2
 
+#define INPUT_ALERT_GPIO    GPIOA
 #define INPUT_RESET_GPIO    GPIOA
 
 typedef struct

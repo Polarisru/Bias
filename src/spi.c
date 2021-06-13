@@ -13,6 +13,7 @@ void SPI_Transmit(uint8_t *data, uint8_t len)
 
   while (len--)
   {
+    #ifndef SPI_HW
     for (i = 0; i < 8; i++)
     {
       if (*data & 0x80)
@@ -25,6 +26,10 @@ void SPI_Transmit(uint8_t *data, uint8_t len)
       *data <<= 1;
     }
     SPI_MOSI_GPIO->BRR = SPI_MOSI_PIN;
+    #else
+    SPI_SendData8(SPI1, *data);
+    while (!(SPI1->SR & SPI_I2S_FLAG_RXNE));
+    #endif
     data++;
   }
 }
@@ -42,6 +47,7 @@ void SPI_Receive(uint8_t *data, uint8_t len)
 
   while (len--)
   {
+    #ifndef SPI_HW
     for (i = 0; i < 8; i++)
     {
       *data <<= 1;
@@ -51,6 +57,11 @@ void SPI_Receive(uint8_t *data, uint8_t len)
       SPI_DELAY;
       SPI_SCLK_GPIO->BRR = SPI_SCLK_PIN;
     }
+    #else
+    SPI_SendData8(SPI1, 0xff);
+    while (!(SPI1->SR & SPI_I2S_FLAG_RXNE));
+    *data = SPI_ReceiveData8(SPI1);
+    #endif
     data++;
   }
 }
@@ -78,6 +89,7 @@ void SPI_Configuration(void)
   GPIO_InitTypeDef GPIO_InitStruct;
   SPI_InitTypeDef SPI_InitStructure;
 
+  #ifndef SPI_HW
   GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
   GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
@@ -95,35 +107,28 @@ void SPI_Configuration(void)
   GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN;
   GPIO_InitStruct.GPIO_Pin = SPI_MISO_PIN;
   GPIO_Init(SPI_MISO_GPIO, &GPIO_InitStruct);
+  #else
+  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStruct.GPIO_Pin = SPI_SCLK_PIN;
+  GPIO_Init(SPI_GPIO, &GPIO_InitStruct);
+  GPIO_PinAFConfig(SPI_GPIO, GPIO_PinSource5, GPIO_AF_0);
+  //GPIO_PinAFConfig(SPI_GPIO, GPIO_PinSource14, GPIO_AF_0);
+  //GPIO_PinAFConfig(GSPI_GPIO, GPIO_PinSource15, GPIO_AF_0);
 
-//  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-//  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;
-//  GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
-//  GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
-//  GPIO_InitStruct.GPIO_Pin = SPI_SCLK_PIN | SPI_MISO_PIN | SPI_MOSI_PIN;
-//  GPIO_Init(SPI_GPIO, &GPIO_InitStruct);
-//  GPIO_PinAFConfig(SPI_GPIO, GPIO_PinSource13, GPIO_AF_0);
-//  GPIO_PinAFConfig(SPI_GPIO, GPIO_PinSource14, GPIO_AF_0);
-//  GPIO_PinAFConfig(GSPI_GPIO, GPIO_PinSource15, GPIO_AF_0);
-//
-//  RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI1, ENABLE);
-//  SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
-//  SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
-//  SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;
-//  SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low ;
-//  SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
-//  SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-//  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_4;
-//  SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
-//  SPI_Init(SPI1, &SPI_InitStructure);
-//  SPI_Cmd(SPI1, ENABLE);
-
-//SPI_SendData8(SPI2,0b00000011);
-//SPI_SendData8(SPI2,adres1);
-//SPI_SendData8(SPI2,adres2);
-//SPI_SendData8(SPI2,0b00000000);
-//SPI_ReceiveData8(SPI2);
-
-//while( !(SPI1->SR & SPI_I2S_FLAG_TXE) );
-//while( !(SPI1->SR & SPI_I2S_FLAG_RXNE) );
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
+  SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
+  SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
+  SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;
+  SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low ;
+  SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
+  SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
+  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_4;
+  SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
+  SPI_Init(SPI1, &SPI_InitStructure);
+  SPI_RxFIFOThresholdConfig(SPI1, SPI_RxFIFOThreshold_QF);
+  SPI_Cmd(SPI1, ENABLE);
+  #endif
 }

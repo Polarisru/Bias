@@ -3,7 +3,7 @@
 /**< Structure with hardware connections for outputs */
 const TOutput OUTPUTS_Pins[OUTPUT_LAST] = {
   {OUTPUT_LED_GPIO, OUTPUT_LED_PIN},
-  {OUTPUT_TEST_GPIO, OUTPUT_TEST_PIN}
+  {OUTPUT_SWITCH_GPIO, OUTPUT_SWITCH_PIN}
 };
 
 /** \brief Switch output on/off

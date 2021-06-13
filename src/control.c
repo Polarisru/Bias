@@ -47,7 +47,7 @@ void CONTROL_Task(void *pParameters)
   uint16_t status, status_c;
   uint8_t i;
 
-  GLOBAL_Reset = false;
+  GLOBAL_Reset = 0;
 
   CONTROL_ErrCode = ERR_NONE;
 
@@ -84,9 +84,8 @@ void CONTROL_Task(void *pParameters)
 
   /**< Wait for 5ms */
   vTaskDelay(5);
-  /**< Set LDAC pin */
-  //AD7293_SetGpio(AD7293_LDAC_PIN);
-  OUTPUTS_Switch(OUTPUT_TEST, true);
+  /**< Set RF_SWITCH pin */
+  OUTPUTS_Switch(OUTPUT_SWITCH, true);
 
   vTaskDelay(20);
 
@@ -97,13 +96,20 @@ void CONTROL_Task(void *pParameters)
       vTaskDelay(100);
       continue;
     }
-    DELAY_Usec(30);
 //    temp = AD7293_GetDrainCurrent(0);
 //    temp = AD7293_GetSupplyVoltage(0);
 //    temp = AD7293_GetTemperature(0);
+    #ifdef DEF_NEW
+    if (GLOBAL_Reset > 0)
+    #else
+    DELAY_Usec(30);
     alerts = AD7293_GetAlerts();
-    if ((alerts & AD7293_ALERTS_MASK) || ((GLOBAL_Reset == true) && (INPUTS_IsActive(INPUT_RESET) == true)))
+    if ((alerts & AD7293_ALERTS_MASK) || ((GLOBAL_Reset > 0) && (INPUTS_IsActive(INPUT_RESET) == true)))
+    #endif
     {
+      #ifdef DEF_NEW
+      alerts = AD7293_GetAlerts();
+      #endif
       /**< Something is going wrong, stop working */
       if (alerts & REGISTER_ALERT_SUM_ISENSX_HIGH)
       {
@@ -111,9 +117,8 @@ void CONTROL_Task(void *pParameters)
         status_c = AD7293_GetCurrentAlerts();
         AD7293_SetPowerOff();
       }
-      /**< Reset LDAC pin */
-      //AD7293_SetGpio(0);
-      OUTPUTS_Switch(OUTPUT_TEST, false);
+      /**< Reset RF_SWITCH pin */
+      OUTPUTS_Switch(OUTPUT_SWITCH, false);
       /**< Wait for 3ms */
       vTaskDelay(3);
       /**< Reset bi-polar outputs */
