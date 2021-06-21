@@ -94,6 +94,7 @@ void UART_Configuration(void)
   DMA_InitTypeDef DMA_InitStructure;
 
   UART_CLOCK_ENABLE;
+  DMA_CLOCK_ENABLE;
 
   /**< Configure USART Tx and Rx as alternate function */
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;

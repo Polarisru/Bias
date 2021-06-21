@@ -10,6 +10,7 @@
 #define UART_NUM                USART1
 
 #define UART_CLOCK_ENABLE       RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE)
+#define DMA_CLOCK_ENABLE        RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE)
 
 #define UART_GPIO             	GPIOA
 
