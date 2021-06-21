@@ -2,7 +2,7 @@
 #include "uart.h"
 
 char UART_RxBuffer[UART_BUFFER_SIZE];
-char *UART_TxBuffer;
+char UART_TxBuffer[UART_BUFFER_SIZE];
 
 uint8_t UART_RxHead;
 
@@ -75,7 +75,7 @@ void UART_Send(uint8_t *data, uint8_t len)
 //    /**< Wait till sending is complete */
 //    while ((UART_NUM->ISR & USART_ISR_TC) == 0);
 //  }
-  UART_TxBuffer = (char*)data;
+  memcpy(UART_TxBuffer, data, len);
   DMA_SetCurrDataCounter(UART_DMA_CHANNEL, len);
   DMA_ClearFlag(UART_DMA_RESET_FLAGS);
   DMA_Cmd(UART_DMA_CHANNEL, ENABLE);
