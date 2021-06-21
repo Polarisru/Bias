@@ -134,7 +134,7 @@ void UART_Configuration(void)
   /**< Enable DMA channel for Tx */
   DMA_DeInit(UART_DMA_CHANNEL);
   DMA_StructInit(&DMA_InitStructure);
-  DMA_InitStructure.DMA_BufferSize = 1;
+  DMA_InitStructure.DMA_BufferSize = 0;
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
   DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
