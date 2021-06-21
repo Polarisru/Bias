@@ -75,9 +75,10 @@ void UART_Send(uint8_t *data, uint8_t len)
 //    /**< Wait till sending is complete */
 //    while ((UART_NUM->ISR & USART_ISR_TC) == 0);
 //  }
-  while (DMA_GetCurrDataCounter(UART_DMA_CHANNEL) > 0);
+  while (DMA_GetCurrDataCounter(UART_DMA_CHANNEL) > 0)
     vTaskDelay(1);
 
+  DMA_Cmd(UART_DMA_CHANNEL, DISABLE);
   memcpy(UART_TxBuffer, data, len);
   DMA_SetCurrDataCounter(UART_DMA_CHANNEL, len);
   DMA_ClearFlag(UART_DMA_RESET_FLAGS);
