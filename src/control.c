@@ -58,12 +58,6 @@ void CONTROL_Task(void *pParameters)
   CONTROL_Configuration();
   SPI_Configuration();
 
-  while (1)
-  {
-    COMM_Send("123\n");
-    vTaskDelay(100);
-  }
-
   COMM_Send("AD7293: ");
   if (AD7293_Configuration() == false)
   {
