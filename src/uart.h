@@ -28,6 +28,10 @@
 
 #define UART_GPIO_AF            GPIO_AF_1
 
+#define UART_DMA_CHANNEL        DMA1_Channel2
+#define UART_DR_BASE            ((uint32_t)&(USART1->TDR))
+#define UART_DMA_RESET_FLAGS    (DMA1_FLAG_TC2 | DMA1_FLAG_HT2 | DMA1_FLAG_TE2)
+
 char UART_RxBuffer[UART_BUFFER_SIZE];
 
 void UART_Send(uint8_t *data, uint8_t len);

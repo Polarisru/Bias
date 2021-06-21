@@ -2,6 +2,7 @@
 #include "uart.h"
 
 char UART_RxBuffer[UART_BUFFER_SIZE];
+char *UART_TxBuffer;
 
 uint8_t UART_RxHead;
 
@@ -68,13 +69,16 @@ void UART_IRQHandler(void)
  */
 void UART_Send(uint8_t *data, uint8_t len)
 {
-  while (len--)
-  {
-    //USART_SendData(UART_NUM, *data++);
-    UART_NUM->TDR = *data++;
-    /**< Wait till sending is complete */
-    while ((UART_NUM->ISR & USART_ISR_TC) == 0);
-  }
+//  while (len--)
+//  {
+//    UART_NUM->TDR = *data++;
+//    /**< Wait till sending is complete */
+//    while ((UART_NUM->ISR & USART_ISR_TC) == 0);
+//  }
+  UART_TxBuffer = (char*)data;
+  DMA_SetCurrDataCounter(UART_DMA_CHANNEL, len);
+  DMA_ClearFlag(UART_DMA_RESET_FLAGS);
+  DMA_Cmd(UART_DMA_CHANNEL, ENABLE);
 }
 
 /** \brief Initialize UART module for communication with PC
@@ -87,6 +91,7 @@ void UART_Configuration(void)
   USART_InitTypeDef USART_InitStructure;
   NVIC_InitTypeDef NVIC_InitStructure;
   GPIO_InitTypeDef  GPIO_InitStructure;
+  DMA_InitTypeDef DMA_InitStructure;
 
   UART_CLOCK_ENABLE;
 
@@ -112,6 +117,8 @@ void UART_Configuration(void)
   USART_ITConfig(UART_NUM, USART_IT_RXNE, ENABLE);
   /**< Enable USART */
   USART_Cmd(UART_NUM, ENABLE);
+  /**< Enable the USART1 Tx DMA1 requests */
+  USART_DMACmd(UART_NUM, USART_DMAReq_Tx, ENABLE);
 
   NVIC_InitStructure.NVIC_IRQChannel = UART_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPriority = 0x01;
@@ -119,4 +126,20 @@ void UART_Configuration(void)
   NVIC_Init(&NVIC_InitStructure);
   /**< Should use lower priority than FreeRTOS interrupts to allow interrupts usage for the RTOS */
   NVIC_SetPriority(UART_IRQn, 8);
+
+  /**< Enable DMA channel for Tx */
+  DMA_DeInit(UART_DMA_CHANNEL);
+  DMA_StructInit(&DMA_InitStructure);
+  DMA_InitStructure.DMA_BufferSize = 1;
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)UART_TxBuffer;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
+  DMA_InitStructure.DMA_PeripheralBaseAddr = UART_DR_BASE;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+  DMA_Init(UART_DMA_CHANNEL, &DMA_InitStructure);
 }

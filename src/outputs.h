@@ -6,7 +6,7 @@
 enum {
   OUTPUT_LED,
   OUTPUT_SWITCH,
-  //OUTPUT_RESET,
+  OUTPUT_RESET,
   OUTPUT_LAST
 };
 
@@ -17,8 +17,8 @@ typedef struct
 } TOutput;
 
 #ifdef DEF_REMOTE
-  #define OUTPUT_LED_PIN     GPIO_Pin_3
-  #define OUTPUT_LED_GPIO    GPIOA
+  #define OUTPUT_LED_PIN     GPIO_Pin_8
+  #define OUTPUT_LED_GPIO    GPIOB
 #else
   #define OUTPUT_LED_PIN     GPIO_Pin_11
   #define OUTPUT_LED_GPIO    GPIOB
@@ -27,8 +27,8 @@ typedef struct
 #define OUTPUT_SWITCH_PIN    GPIO_Pin_1
 #define OUTPUT_SWITCH_GPIO   GPIOB
 
-//#define OUTPUT_RESET_PIN    GPIO_Pin_3
-//#define OUTPUT_RESET_GPIO   GPIOA
+#define OUTPUT_RESET_PIN     GPIO_Pin_3
+#define OUTPUT_RESET_GPIO    GPIOA
 
 void OUTPUTS_Switch(uint8_t pin, bool on);
 void OUTPUTS_Toggle(uint8_t pin);

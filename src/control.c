@@ -17,6 +17,7 @@ volatile float temp;
  */
 void CONTROL_Configuration(void)
 {
+  OUTPUTS_Switch(OUTPUT_RESET, true);
 }
 
 /** \brief Reset error codes
@@ -56,6 +57,12 @@ void CONTROL_Task(void *pParameters)
   /**< Configure peripherals */
   CONTROL_Configuration();
   SPI_Configuration();
+
+  while (1)
+  {
+    COMM_Send("123\n");
+    vTaskDelay(100);
+  }
 
   COMM_Send("AD7293: ");
   if (AD7293_Configuration() == false)
