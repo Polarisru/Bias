@@ -89,6 +89,10 @@ void CONTROL_Task(void *pParameters)
 
   vTaskDelay(20);
 
+  GLOBAL_Reset = 0;
+  //AD7293_ResetAlerts();
+  AD7293_EnablePowerMonitoring();
+
   while (1)
   {
     if (CONTROL_ErrCode != ERR_NONE)
@@ -96,6 +100,7 @@ void CONTROL_Task(void *pParameters)
       vTaskDelay(100);
       continue;
     }
+//    DELAY_Usec(30);
 //    temp = AD7293_GetDrainCurrent(0);
 //    temp = AD7293_GetSupplyVoltage(0);
 //    temp = AD7293_GetTemperature(0);

@@ -353,6 +353,7 @@ void AD7293_ResetAlerts(void);
 void AD7293_SetGpio(uint8_t value);
 void AD7293_SetPowerOn(void);
 void AD7293_SetPowerOff(void);
+void AD7293_EnablePowerMonitoring(void);
 bool AD7293_Configuration(void);
 
 #endif

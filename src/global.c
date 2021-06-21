@@ -8,6 +8,6 @@ uint16_t EE_DrainVoltageMax;
 int8_t   EE_TemperatureMin;
 int8_t   EE_TemperatureMax;
 
-uint8_t GLOBAL_Reset;
+volatile uint8_t GLOBAL_Reset;
 
 TaskHandle_t xTaskComm;

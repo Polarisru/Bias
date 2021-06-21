@@ -108,9 +108,9 @@ void UART_Configuration(void)
   USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
   USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
   USART_Init(UART_NUM, &USART_InitStructure);
-  /* Enable 8xUSARTs Receive interrupts */
+  /**< Enable USART Receive interrupt */
   USART_ITConfig(UART_NUM, USART_IT_RXNE, ENABLE);
-  /* Enable the 8xUSARTs */
+  /**< Enable USART */
   USART_Cmd(UART_NUM, ENABLE);
 
   NVIC_InitStructure.NVIC_IRQChannel = UART_IRQn;

@@ -6,6 +6,7 @@
 enum {
   OUTPUT_LED,
   OUTPUT_SWITCH,
+  //OUTPUT_RESET,
   OUTPUT_LAST
 };
 
@@ -25,6 +26,9 @@ typedef struct
 
 #define OUTPUT_SWITCH_PIN    GPIO_Pin_1
 #define OUTPUT_SWITCH_GPIO   GPIOB
+
+//#define OUTPUT_RESET_PIN    GPIO_Pin_3
+//#define OUTPUT_RESET_GPIO   GPIOA
 
 void OUTPUTS_Switch(uint8_t pin, bool on);
 void OUTPUTS_Toggle(uint8_t pin);

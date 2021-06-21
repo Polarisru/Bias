@@ -438,6 +438,21 @@ void AD7293_Reset(void)
 	AD7293_WriteCommonWord(REGISTER_COMMON_SOFTWARE_RESET, 0x0000);
 }
 
+/** \brief Enable power monitoring
+ *
+ * \return void
+ *
+ */
+void AD7293_EnablePowerMonitoring(void)
+{
+  /**< ALERT0: Power supply */
+	AD7293_WriteWord(
+		REGISTER_ALERT0_PAGE,
+		REGISTER_ALERT0_PIN_RSXMON,
+    REGISTER_ALERT_PIN_RSX_HIGH_0 | REGISTER_ALERT_PIN_RSX_LOW_0
+  );
+}
+
 /** \brief Configure AD7293
  *
  * \param void
@@ -460,7 +475,7 @@ bool AD7293_Configuration(void)
 	AD7293_WriteWord(
 		REGISTER_PAGE_CONFIGURATION,
     REGISTER_CONFIGURATION_DIGITAL_IO_FUNCTION,
-    0x0000
+    0x0007
   );
   /**< Enable outputs GPIOs: ALERT0, ALERT1 */
 	AD7293_WriteWord(
@@ -594,12 +609,12 @@ bool AD7293_Configuration(void)
     REGISTER_ALERT_PIN_ISENSX_LOW_3 | REGISTER_ALERT_PIN_ISENSX_LOW_2 |
     REGISTER_ALERT_PIN_ISENSX_LOW_1 | REGISTER_ALERT_PIN_ISENSX_LOW_0
   );
-  /**< ALERT0: Power supply */
-	AD7293_WriteWord(
-		REGISTER_ALERT0_PAGE,
-		REGISTER_ALERT0_PIN_RSXMON,
-    REGISTER_ALERT_PIN_RSX_HIGH_0 | REGISTER_ALERT_PIN_RSX_LOW_0
-  );
+//  /**< ALERT0: Power supply */
+//	AD7293_WriteWord(
+//		REGISTER_ALERT0_PAGE,
+//		REGISTER_ALERT0_PIN_RSXMON,
+//    REGISTER_ALERT_PIN_RSX_HIGH_0 | REGISTER_ALERT_PIN_RSX_LOW_0
+//  );
   #endif
   /**< Enable all DACs */
 	AD7293_WriteCommonByte(REGISTER_COMMON_DAC_ENABLE, 0xFF);
