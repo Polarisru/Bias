@@ -31,6 +31,9 @@ void INPUT_ALERT_IRQ_HANDLER(void)
 {
 	if (EXTI_GetITStatus(INPUT_ALERT_EXTI_LINE) != RESET)
   {
+		GLOBAL_ErrStatus = AD7293_GetAlerts();
+		/**< Stop AD7293 immediately! */
+		OUTPUTS_Switch(OUTPUT_RESET, false);
 		GLOBAL_Reset |= (1 << INT_ALERT);
 		/**< Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(INPUT_ALERT_EXTI_LINE);

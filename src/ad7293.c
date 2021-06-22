@@ -354,6 +354,9 @@ float AD7293_GetTemperature(uint8_t channel)
  */
 uint16_t AD7293_GetAlerts(void)
 {
+  #ifdef DEF_NEW
+  SPI_UNSELECT;
+  #endif
   return AD7293_ReadWord(REGISTER_ALERT, REGISTER_ALERT_SUM);
 }
 

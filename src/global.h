@@ -12,6 +12,7 @@ int8_t   EE_TemperatureMin;
 int8_t   EE_TemperatureMax;
 
 volatile uint8_t GLOBAL_Reset;
+uint16_t GLOBAL_ErrStatus;
 
 TaskHandle_t xTaskComm;
 

@@ -9,7 +9,9 @@
  */
 void SPI_Transmit(uint8_t *data, uint8_t len)
 {
+  #ifndef SPI_HW
   uint8_t i;
+  #endif
 
   while (len--)
   {
@@ -45,7 +47,9 @@ void SPI_Transmit(uint8_t *data, uint8_t len)
  */
 void SPI_Receive(uint8_t *data, uint8_t len)
 {
+  #ifndef SPI_HW
   uint8_t i;
+  #endif
 
   while (len--)
   {
@@ -80,6 +84,17 @@ void SPI_Select(uint8_t device)
       SPI_AD7293_CS_GPIO->BSRR = SPI_AD7293_CS_PIN;
       break;
   }
+}
+
+/** \brief Reset SPI bus
+ *
+ * \return void
+ *
+ */
+void SPI_Reset(void)
+{
+  SPI_UNSELECT;
+  SPI_DELAY;
 }
 
 /** \brief Initialite SPI communication

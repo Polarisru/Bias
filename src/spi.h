@@ -41,5 +41,6 @@ void SPI_Configuration(void);
 void SPI_Transmit(uint8_t *data, uint8_t len);
 void SPI_Receive(uint8_t *data, uint8_t len);
 void SPI_Select(uint8_t device);
+void SPI_Reset(void);
 
 #endif

@@ -75,14 +75,22 @@ void UART_Send(uint8_t *data, uint8_t len)
 //    /**< Wait till sending is complete */
 //    while ((UART_NUM->ISR & USART_ISR_TC) == 0);
 //  }
-  while (DMA_GetCurrDataCounter(UART_DMA_CHANNEL) > 0)
+
+  //while (DMA_GetCurrDataCounter(UART_DMA_CHANNEL) > 0)
+  while (UART_DMA_CHANNEL->CNDTR > 0)
     vTaskDelay(1);
 
-  DMA_Cmd(UART_DMA_CHANNEL, DISABLE);
+  //DMA_Cmd(UART_DMA_CHANNEL, DISABLE);
+  /**< Disable the selected DMAy Channelx */
+  UART_DMA_CHANNEL->CCR &= (uint16_t)(~DMA_CCR_EN);
   memcpy(UART_TxBuffer, data, len);
-  DMA_SetCurrDataCounter(UART_DMA_CHANNEL, len);
+  //DMA_SetCurrDataCounter(UART_DMA_CHANNEL, len);
+  /**< Sets the number of data units in the current DMAy Channelx transfer */
+  UART_DMA_CHANNEL->CNDTR = len;
   DMA_ClearFlag(UART_DMA_RESET_FLAGS);
-  DMA_Cmd(UART_DMA_CHANNEL, ENABLE);
+  //DMA_Cmd(UART_DMA_CHANNEL, ENABLE);
+  /**< Enable the selected DMAy Channelx */
+  UART_DMA_CHANNEL->CCR |= DMA_CCR_EN;
 }
 
 /** \brief Initialize UART module for communication with PC
