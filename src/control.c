@@ -57,6 +57,24 @@ void CONTROL_Task(void *pParameters)
 
   CONTROL_ResetErrCode();
 
+//  tempVal = 34.45f;
+//  currVal = 0.12f;
+//  voltVal = 25.91f;
+//
+//  strcpy(str, "I: ");
+//  strcat(str, UTILS_FloatToStr(currVal, 2));
+//  strcat(str, "A  ");
+//  strcat(str, "V: ");
+//  strcat(str, UTILS_FloatToStr(voltVal, 1));
+//  strcat(str, "V  ");
+//  strcat(str, "T: ");
+//  strcat(str, UTILS_FloatToStr(tempVal, 1));
+//  strcat(str, "C\n");
+//  COMM_Send(str);
+//
+//  while (1);
+
+
   /**< Configure peripherals */
   CONTROL_Configuration();
   SPI_Configuration();
