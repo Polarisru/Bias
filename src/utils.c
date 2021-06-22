@@ -74,3 +74,50 @@ char *UTILS_StrUpr(char *s)
   }
   return s;
 }
+
+/** \brief Simple float to string converter
+ *
+ * \param [in] value Float value
+ * \param [in] pos Number of positions after decimal point
+ * \return char* Pointer to a resulting string
+ *
+ */
+char *UTILS_FloatToStr(float value, uint8_t pos)
+{
+  static char b[16];
+  uint32_t uval32;
+  uint32_t mul = 1;
+  uint8_t i;
+  char ch;
+
+  for (i = 0; i < pos; i++)
+    mul *= 10;
+  uval32 = (uint32_t)(value * mul);
+
+  i = 0;
+  while (uval32 != 0)
+  {
+    b[i++] = (uint8_t)(uval32 % 10) + '0';
+    uval32 = uval32 / 10;
+    if (i == pos)
+      b[i++] = '.';
+    if (i >= 16)
+      break;
+  }
+
+  b[i] = 0;
+
+  /**< Reverse the string */
+  int start = 0;
+  int stop = i - 1;
+  while (start < stop)
+  {
+    ch = b[start];
+    b[start] = b[stop];
+    b[stop] = ch;
+    start++;
+    stop--;
+  }
+
+  return b;
+}

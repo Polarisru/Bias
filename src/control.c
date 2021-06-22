@@ -6,9 +6,9 @@
 #include "inputs.h"
 #include "outputs.h"
 #include "spi.h"
+#include "utils.h"
 
 static uint8_t CONTROL_ErrCode;
-volatile float temp;
 
 /** \brief Configure control module
  *
@@ -47,6 +47,9 @@ void CONTROL_Task(void *pParameters)
   uint16_t alerts;
   uint16_t status, status_c;
   uint8_t i;
+  uint8_t counter = 0;
+  float tempVal, currVal, voltVal;
+  char str[64];
 
   GLOBAL_Reset = 0;
 
@@ -101,10 +104,36 @@ void CONTROL_Task(void *pParameters)
       vTaskDelay(100);
       continue;
     }
-//    DELAY_Usec(30);
-//    temp = AD7293_GetDrainCurrent(0);
-//    temp = AD7293_GetSupplyVoltage(0);
-//    temp = AD7293_GetTemperature(0);
+    #ifdef DEF_NEW
+    vTaskDelay(100);
+    counter++;
+    switch (counter)
+    {
+      case 1:
+        currVal = AD7293_GetDrainCurrent(0);
+        break;
+      case 2:
+        voltVal = AD7293_GetSupplyVoltage(0);
+        break;
+      case 3:
+        tempVal = AD7293_GetTemperature(0);
+        break;
+      case 10:
+        /**< Print results */
+        strcpy(str, "I: ");
+        strcat(str, UTILS_FloatToStr(currVal, 2));
+        strcat(str, "A  ");
+        strcat(str, "V: ");
+        strcat(str, UTILS_FloatToStr(voltVal, 1));
+        strcat(str, "V  ");
+        strcat(str, "T: ");
+        strcat(str, UTILS_FloatToStr(tempVal, 1));
+        strcat(str, "C\n");
+        COMM_Send(str);
+        counter = 0;
+        break;
+    }
+    #endif
     #ifdef DEF_NEW
     if (GLOBAL_Reset > 0)
     #else
@@ -114,7 +143,7 @@ void CONTROL_Task(void *pParameters)
     #endif
     {
       #ifdef DEF_NEW
-      alerts = AD7293_GetAlerts();
+      alerts = GLOBAL_ErrStatus;//AD7293_GetAlerts();
       #endif
       /**< Something is going wrong, stop working */
       if (alerts & REGISTER_ALERT_SUM_ISENSX_HIGH)

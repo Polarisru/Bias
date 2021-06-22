@@ -22,7 +22,8 @@ const eeVal_t EEPROM_Values[] =
   {0x20, sizeof(uint16_t), (void*)&EE_DrainVoltageMin, {.u16 = 260}},
   {0x22, sizeof(uint16_t), (void*)&EE_DrainVoltageMax, {.u16 = 300}},
   {0x24, sizeof(int8_t),   (void*)&EE_TemperatureMin,  {.i8 = -30}},
-  {0x26, sizeof(int8_t),   (void*)&EE_TemperatureMax,  {.i8 = 85}}
+  {0x26, sizeof(int8_t),   (void*)&EE_TemperatureMax,  {.i8 = 85}},
+  {0x28, sizeof(uint8_t),  (void*)&EE_TemperatureOffs, {.u8 = 0}}
 };
 
 /** \brief Recalculate EEPROM CRC

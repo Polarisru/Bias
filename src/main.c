@@ -44,7 +44,7 @@ int main(void)
   /**< Create RTOS tasks */
   xTaskCreate(LED_Task, "LedTask", 50, NULL, LED_TASK_PRIORITY, NULL);
   xTaskCreate(COMM_Task, "CommTask", 300, NULL, COMM_TASK_PRIORITY, &xTaskComm);
-  xTaskCreate(CONTROL_Task, "ControlTask", 50, NULL, CONTROL_TASK_PRIORITY, NULL);
+  xTaskCreate(CONTROL_Task, "ControlTask", 60, NULL, CONTROL_TASK_PRIORITY, NULL);
   /**< Start the scheduler */
 	vTaskStartScheduler();
 }

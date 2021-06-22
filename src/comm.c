@@ -15,6 +15,8 @@ const char commSV[]   = "SV";
 const char commE[]    = "E?";
 const char commPON[]  = "PON";
 const char commPOFF[] = "POFF";
+const char commTCI[]  = "TC>1";
+const char commTCD[]  = "TC<1";
 
 const char commErrOk[]  = "OK";
 const char commErrCmd[] = "E.C";
@@ -64,6 +66,8 @@ void COMM_Task(void *pParameters)
   sprintf(buff, "Supply voltage range: %d.%01d..%d.%01dV\n", EE_DrainVoltageMin / 10, EE_DrainVoltageMin % 10, EE_DrainVoltageMax / 10, EE_DrainVoltageMax % 10);
   COMM_Send(buff);
   sprintf(buff, "Temperature range: %d..%d°C\n", EE_TemperatureMin, EE_TemperatureMax);
+  COMM_Send(buff);
+  sprintf(buff, "Temperature offset: %d°C\n", EE_TemperatureOffs);
   COMM_Send(buff);
 
   while (1)
@@ -164,6 +168,20 @@ void COMM_Task(void *pParameters)
           sprintf(buff, "%u", EE_DrainCurrent[uval32 - 1]);
         }
       }
+    } else
+    if (0 == strncmp(cmd, commTCI, strlen(commTCI)))
+    {
+      /**< It's a TC>1 command */
+      if (EE_TemperatureOffs < 99)
+        EE_TemperatureOffs++;
+      EEPROM_SaveVariable(&EE_TemperatureOffs);
+    } else
+    if (0 == strncmp(cmd, commTCD, strlen(commTCD)))
+    {
+      /**< It's a TC<1 command */
+      if (EE_TemperatureOffs > 0)
+        EE_TemperatureOffs--;
+      EEPROM_SaveVariable(&EE_TemperatureOffs);
     } else
     if (0 == strncmp(cmd, commT, strlen(commT)))
     {

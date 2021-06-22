@@ -1,5 +1,6 @@
 #include "global.h"
 #include "inputs.h"
+#include "outputs.h"
 
 #ifdef DEF_NEW
 #define INPUT_ALERT_EXTI_GPIO     EXTI_PortSourceGPIOA
@@ -19,7 +20,6 @@ void INPUT_RESET_IRQ_HANDLER(void)
 {
 	if (EXTI_GetITStatus(INPUT_RESET_EXTI_LINE) != RESET)
   {
-		//GLOBAL_Reset = true;
 		GLOBAL_Reset |= (1 << INT_RESET);
 		/**< Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(INPUT_RESET_EXTI_LINE);
@@ -31,8 +31,9 @@ void INPUT_ALERT_IRQ_HANDLER(void)
 {
 	if (EXTI_GetITStatus(INPUT_ALERT_EXTI_LINE) != RESET)
   {
+    /**< Read error status first */
 		GLOBAL_ErrStatus = AD7293_GetAlerts();
-		/**< Stop AD7293 immediately! */
+		/**< Then stop AD7293 immediately! */
 		OUTPUTS_Switch(OUTPUT_RESET, false);
 		GLOBAL_Reset |= (1 << INT_ALERT);
 		/**< Clear the EXTI line pending bit */
