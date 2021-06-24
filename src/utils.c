@@ -105,6 +105,10 @@ char *UTILS_FloatToStr(float value, uint8_t pos)
       break;
   }
 
+  if (i == 0)
+    b[i++] = '0';
+  if (b[i - 1] == '.')
+    b[i++] = '0';
   b[i] = 0;
 
   /**< Reverse the string */
